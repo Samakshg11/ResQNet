@@ -69,5 +69,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/alerts', [AlertController::class, 'store'])->name('alerts.store');
 
     // Analytics
+    // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+
+    // Profile
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 });

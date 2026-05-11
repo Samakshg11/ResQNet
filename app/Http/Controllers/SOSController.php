@@ -48,7 +48,8 @@ class SOSController extends Controller
         $validated['user_id'] = $request->user()->id;
         $validated['status'] = 'pending';
 
-        SOSRequest::create($validated);
+        $sos = SOSRequest::create($validated);
+        broadcast(new \App\Events\NewSOSRequest($sos));
 
         return redirect()->route('sos.index')->with('success', 'SOS request sent successfully! Help is on the way.');
     }

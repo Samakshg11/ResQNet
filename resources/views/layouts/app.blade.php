@@ -384,13 +384,13 @@
                 <i class="fas fa-cog"></i> Alerts
             </a>
         </div>
-        <div class="user-block">
+        <a href="{{ route('profile.edit') }}" class="user-block" style="text-decoration: none; cursor: pointer; display: flex;">
             <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
             <div class="user-info">
                 <div class="name">{{ Str::limit(auth()->user()->name, 18) }}</div>
                 <div class="role">ID: RQN-{{ str_pad(auth()->user()->id, 3, '0', STR_PAD_LEFT) }}</div>
             </div>
-        </div>
+        </a>
     </aside>
 
     {{-- Top Nav --}}
@@ -404,8 +404,13 @@
         </div>
         <div class="topnav-right">
             <div class="topnav-icon"><i class="fas fa-bell"></i></div>
-            <div class="topnav-icon"><i class="fas fa-search"></i></div>
             <a href="{{ route('sos.create') }}" class="btn-report">Report Emergency</a>
+            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="topnav-icon" style="background:transparent; border:none;" title="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </form>
         </div>
     </nav>
 

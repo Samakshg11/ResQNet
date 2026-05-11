@@ -145,6 +145,47 @@
         }
     });
 
+    // Real-time updates via Laravel Echo
+    document.addEventListener('DOMContentLoaded', function() {
+        if (window.Echo) {
+            window.Echo.channel('emergency-channel')
+                .listen('.new.sos', (e) => {
+                    // Add marker to map
+                    if(e.sos.latitude && e.sos.longitude) {
+                        L.marker([e.sos.latitude, e.sos.longitude], { icon: criticalIcon })
+                            .addTo(map)
+                            .bindPopup(`<div style="min-width:150px">
+                                <div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:4px">NEW SIGNAL: ${e.sos.type}</div>
+                                <div style="font-size:12px;color:var(--text-secondary)">Victims: ${e.sos.victim_count}</div>
+                            </div>`)
+                            .openPopup();
+                        map.setView([e.sos.latitude, e.sos.longitude], 8);
+                    }
+                    
+                    // Add card to live feed
+                    const feedList = document.querySelector('.live-feed-content');
+                    if (feedList) {
+                        const noActivity = feedList.querySelector('p');
+                        if (noActivity) noActivity.remove();
+                        
+                        const newCard = document.createElement('div');
+                        newCard.className = 'feed-card fade-up';
+                        newCard.innerHTML = `
+                            <div class="feed-card-header">
+                                <span class="feed-card-type" style="color:var(--accent)">NEW SOS SIGNAL</span>
+                                <span class="feed-card-time">Just now</span>
+                            </div>
+                            <div class="feed-card-body">
+                                ${e.sos.type.replace('_', ' ')} reported by ${e.sos.victim_name || 'citizen'}. ${e.sos.victim_count} victim(s) involved.
+                                ${e.sos.message ? `<br><br>"${e.sos.message}"` : ''}
+                            </div>
+                        `;
+                        feedList.insertBefore(newCard, feedList.firstChild);
+                    }
+                });
+        }
+    });
+
     function recenterMap() {
         map.setView([22.5, 79.0], 5);
     }

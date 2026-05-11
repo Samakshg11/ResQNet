@@ -116,7 +116,7 @@
     });
 
     // Load Disasters
-    const disasters = @json($disasters->items() ?? $disasters);
+    const disasters = @json($disasters instanceof \Illuminate\Pagination\AbstractPaginator ? $disasters->items() : $disasters);
     disasters.forEach(d => {
         if(d.latitude && d.longitude) {
             const icon = d.severity === 'critical' ? criticalIcon : standardIcon;

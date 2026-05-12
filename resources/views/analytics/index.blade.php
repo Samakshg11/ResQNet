@@ -114,48 +114,75 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const map = L.map('analytics-map', { zoomControl: false }).setView([22.5, 79.0], 5);
+        console.log('Initializing Analytics Map...');
+        const mapElement = document.getElementById('analytics-map');
+        if (!mapElement) {
+            console.error('Map element not found!');
+            return;
+        }
+
+        const map = L.map('analytics-map', { 
+            zoomControl: false,
+            fadeAnimation: true
+        }).setView([22.5, 79.0], 5);
         
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        // Use a more robust tile layer URL (removed {r})
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
             subdomains: 'abcd',
-            maxZoom: 20
+            maxZoom: 19
         }).addTo(map);
 
         const markers = @json($sosMarkers);
+        console.log('Markers loaded:', markers.length);
         
+        let markerCount = 0;
         markers.forEach(m => {
             if (m.latitude && m.longitude) {
-                const severityClass = m.severity === 'critical' ? 'critical' : (m.severity === 'high' ? 'high' : 'medium');
-                const markerIcon = L.divIcon({
-                    className: 'custom-div-icon',
-                    html: `<div class="map-marker-dot ${severityClass}"></div>`,
-                    iconSize: [10, 10],
-                    iconAnchor: [5, 5]
-                });
+                const lat = parseFloat(m.latitude);
+                const lng = parseFloat(m.longitude);
+                
+                if (!isNaN(lat) && !isNaN(lng)) {
+                    const severityClass = m.severity === 'critical' ? 'critical' : (m.severity === 'high' ? 'high' : 'medium');
+                    const markerIcon = L.divIcon({
+                        className: 'custom-div-icon',
+                        html: `<div class="map-marker-dot ${severityClass}"></div>`,
+                        iconSize: [10, 10],
+                        iconAnchor: [5, 5]
+                    });
 
-                L.marker([parseFloat(m.latitude), parseFloat(m.longitude)], { icon: markerIcon }).addTo(map)
-                 .bindPopup(`
-                    <div style="min-width:140px">
-                        <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;letter-spacing:1px">${m.severity}</div>
-                        <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">${m.type.replace('_',' ').toUpperCase()}</div>
-                        <div style="font-size:12px;color:var(--accent);font-weight:600">${m.status.toUpperCase()}</div>
-                    </div>
-                 `);
+                    L.marker([lat, lng], { icon: markerIcon }).addTo(map)
+                     .bindPopup(`
+                        <div style="min-width:140px">
+                            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;letter-spacing:1px">${m.severity}</div>
+                            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">${m.type.replace('_',' ').toUpperCase()}</div>
+                            <div style="font-size:12px;color:var(--accent);font-weight:600">${m.status.toUpperCase()}</div>
+                        </div>
+                     `);
+                    markerCount++;
+                }
             }
         });
+        console.log('Markers placed:', markerCount);
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
+                console.log('Geolocation successful');
                 map.setView([position.coords.latitude, position.coords.longitude], 6);
-            }, function() {
-                // Fallback if location access denied
+            }, function(error) {
+                console.warn('Geolocation failed:', error.message);
                 map.setView([22.5, 79.0], 5);
             });
         }
         
         L.control.zoom({ position: 'bottomright' }).addTo(map);
+        
+        // Force a resize fix for Leaflet
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 500);
     });
 </script>
 @endsection
+
 

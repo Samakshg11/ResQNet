@@ -449,5 +449,6 @@
     @else
         @yield('content')
     @endauth
+    @yield('scripts')
 </body>
 </html>

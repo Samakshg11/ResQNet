@@ -384,13 +384,21 @@
                 <i class="fas fa-cog"></i> Alerts
             </a>
         </div>
-        <a href="{{ route('profile.edit') }}" class="user-block" style="text-decoration: none; cursor: pointer; display: flex;">
-            <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
-            <div class="user-info">
-                <div class="name">{{ Str::limit(auth()->user()->name, 18) }}</div>
-                <div class="role">ID: RQN-{{ str_pad(auth()->user()->id, 3, '0', STR_PAD_LEFT) }}</div>
-            </div>
-        </a>
+        <div class="user-block" style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; align-items: center; justify-content: space-between;">
+            <a href="{{ route('profile.edit') }}" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
+                <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                <div class="user-info">
+                    <div class="name">{{ Str::limit(auth()->user()->name, 12) }}</div>
+                    <div class="role">ID: RQN-{{ str_pad(auth()->user()->id, 3, '0', STR_PAD_LEFT) }}</div>
+                </div>
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="topnav-icon" style="background:transparent; border:none; width: 32px; height: 32px;" title="Logout">
+                    <i class="fas fa-right-from-bracket" style="font-size: 14px; color: var(--accent);"></i>
+                </button>
+            </form>
+        </div>
     </aside>
 
     {{-- Top Nav --}}

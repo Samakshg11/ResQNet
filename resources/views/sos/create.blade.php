@@ -128,8 +128,8 @@ function selectType(el, val) {
     document.getElementById('type-input').value = val;
 }
 
-// Initialize Leaflet Map
-let map = L.map('sos-map').setView([28.6139, 77.2090], 13);
+// Initialize Leaflet Map (Broad view initially, will refine with geolocation)
+let map = L.map('sos-map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
 }).addTo(map);

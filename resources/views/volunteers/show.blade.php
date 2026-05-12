@@ -125,9 +125,9 @@
     }
 
     function initRouteMap() {
-        // Volunteer Current Location (Defaulting to Delhi if not set)
-        const startLat = {{ $volunteer->current_lat ?? 28.6139 }};
-        const startLng = {{ $volunteer->current_lng ?? 77.2090 }};
+        // Volunteer Current Location (Defaulting to a broad view if not set)
+        const startLat = {{ $volunteer->current_lat ?? 20.5937 }};
+        const startLng = {{ $volunteer->current_lng ?? 78.9629 }};
         
         // Target Location (Mocking Sector 4, Riverside District)
         const endLat = startLat + 0.02;

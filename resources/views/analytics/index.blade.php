@@ -3,20 +3,34 @@
 @section('styles')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-    #analytics-map { height: 400px; width: 100%; border-radius: 12px; margin-bottom: 32px; border: 1px solid var(--border); z-index: 1; }
+    #analytics-map { height: 440px; width: 100%; border-radius: 16px; margin-bottom: 32px; border: 1px solid var(--border); z-index: 1; background: #0a0a0a; }
     .map-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    
+    /* Premium Map UI */
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #161616; color: var(--text); border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .leaflet-container a.leaflet-popup-close-button { color: var(--text-muted); }
+    .leaflet-popup-content { margin: 16px; font-family: var(--sans); }
+    
+    .map-marker-dot { width: 10px; height: 10px; border-radius: 50%; position: relative; }
+    .map-marker-dot.critical { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+    .map-marker-dot.high { background: var(--yellow); box-shadow: 0 0 15px var(--yellow); }
+    .map-marker-dot.medium { background: var(--blue); box-shadow: 0 0 15px var(--blue); }
+    
+    .map-marker-dot.critical::after { content: ''; position: absolute; inset: -6px; border: 1.5px solid var(--accent); border-radius: 50%; animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+    @keyframes pulse-ring { 0% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(2.5); opacity: 0; } }
 </style>
 @endsection
 @section('content')
 <div class="page-header">
-    <div><h1>Analytics</h1><p>Platform performance metrics and operational intelligence.</p></div>
+    <div><h1>Operational Intelligence</h1><p>Geospatial analysis and platform performance metrics.</p></div>
 </div>
 
 <div class="map-header">
     <span class="section-title" style="margin-bottom:0">Live Situation Map</span>
-    <div style="display:flex;gap:12px;align-items:center">
-        <span style="font-size:12px;color:var(--text-muted)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:4px"></span> Critical</span>
-        <span style="font-size:12px;color:var(--text-muted)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:4px"></span> Warning</span>
+    <div style="display:flex;gap:16px;align-items:center">
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:6px"></span> Critical</span>
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:6px"></span> High</span>
+        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--blue);margin-right:6px"></span> Other</span>
     </div>
 </div>
 <div id="analytics-map"></div>
@@ -100,32 +114,43 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const map = L.map('analytics-map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
+        const map = L.map('analytics-map', { zoomControl: false }).setView([22.5, 79.0], 5);
         
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
         }).addTo(map);
 
         const markers = @json($sosMarkers);
         
         markers.forEach(m => {
             if (m.latitude && m.longitude) {
-                const color = m.severity === 'critical' ? 'var(--accent)' : (m.severity === 'high' ? 'var(--yellow)' : 'var(--blue)');
+                const severityClass = m.severity === 'critical' ? 'critical' : (m.severity === 'high' ? 'high' : 'medium');
                 const markerIcon = L.divIcon({
                     className: 'custom-div-icon',
-                    html: `<div style="width:10px;height:10px;background:${color};border-radius:50%;box-shadow:0 0 10px ${color};"></div>`,
+                    html: `<div class="map-marker-dot ${severityClass}"></div>`,
                     iconSize: [10, 10],
                     iconAnchor: [5, 5]
                 });
 
-                L.marker([m.latitude, m.longitude], { icon: markerIcon }).addTo(map)
-                 .bindPopup(`<div style="font-size:12px;font-weight:600;color:#0a0a0a">${m.type.toUpperCase()}</div><div style="font-size:10px;color:#666">${m.status}</div>`);
+                L.marker([parseFloat(m.latitude), parseFloat(m.longitude)], { icon: markerIcon }).addTo(map)
+                 .bindPopup(`
+                    <div style="min-width:140px">
+                        <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;letter-spacing:1px">${m.severity}</div>
+                        <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">${m.type.replace('_',' ').toUpperCase()}</div>
+                        <div style="font-size:12px;color:var(--accent);font-weight:600">${m.status.toUpperCase()}</div>
+                    </div>
+                 `);
             }
         });
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function(position) {
                 map.setView([position.coords.latitude, position.coords.longitude], 6);
+            }, function() {
+                // Fallback if location access denied
+                map.setView([22.5, 79.0], 5);
             });
         }
         
@@ -133,3 +158,4 @@
     });
 </script>
 @endsection
+

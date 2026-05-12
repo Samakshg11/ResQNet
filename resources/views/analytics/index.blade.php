@@ -114,27 +114,39 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Initializing Analytics Map...');
+        console.log('Analytics Map: Starting Initialization');
         const mapElement = document.getElementById('analytics-map');
+        
         if (!mapElement) {
-            console.error('Map element not found!');
+            console.error('Analytics Map: Element #analytics-map not found in DOM');
             return;
         }
 
+        // Initialize map with a clear background color to distinguish from "black"
+        mapElement.style.background = '#1a1a1a'; 
+
         const map = L.map('analytics-map', { 
-            zoomControl: false,
-            fadeAnimation: true
-        }).setView([22.5, 79.0], 5);
+            zoomControl: true,
+            scrollWheelZoom: false 
+        }).setView([20.5937, 78.9629], 5);
         
-        // Use a more robust tile layer URL (removed {r})
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-            subdomains: 'abcd',
+        console.log('Analytics Map: Map object created');
+
+        // Switching to OpenStreetMap standard tiles for testing visibility
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
             maxZoom: 19
         }).addTo(map);
 
+        // Add a guaranteed TEST MARKER to verify rendering
+        L.marker([20.5937, 78.9629]).addTo(map)
+            .bindPopup('<b>SYSTEM TEST</b><br>Map is operational.')
+            .openPopup();
+        
+        console.log('Analytics Map: Tile layer and test marker added');
+
         const markers = @json($sosMarkers);
-        console.log('Markers loaded:', markers.length);
+        console.log('Analytics Map: Processing ' + markers.length + ' database markers');
         
         let markerCount = 0;
         markers.forEach(m => {
@@ -154,35 +166,25 @@
                     L.marker([lat, lng], { icon: markerIcon }).addTo(map)
                      .bindPopup(`
                         <div style="min-width:140px">
-                            <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px;letter-spacing:1px">${m.severity}</div>
-                            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">${m.type.replace('_',' ').toUpperCase()}</div>
-                            <div style="font-size:12px;color:var(--accent);font-weight:600">${m.status.toUpperCase()}</div>
+                            <div style="font-size:10px;font-weight:700;color:#333;text-transform:uppercase;margin-bottom:4px;letter-spacing:1px">${m.severity}</div>
+                            <div style="font-size:14px;font-weight:600;color:#000;margin-bottom:4px">${m.type.replace('_',' ').toUpperCase()}</div>
+                            <div style="font-size:12px;color:#e8735a;font-weight:600">${m.status.toUpperCase()}</div>
                         </div>
                      `);
                     markerCount++;
                 }
             }
         });
-        console.log('Markers placed:', markerCount);
+        console.log('Analytics Map: Placed ' + markerCount + ' markers from DB');
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                console.log('Geolocation successful');
-                map.setView([position.coords.latitude, position.coords.longitude], 6);
-            }, function(error) {
-                console.warn('Geolocation failed:', error.message);
-                map.setView([22.5, 79.0], 5);
-            });
-        }
-        
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
-        
-        // Force a resize fix for Leaflet
+        // Force resize fix
         setTimeout(() => {
             map.invalidateSize();
-        }, 500);
+            console.log('Analytics Map: Size invalidated');
+        }, 1000);
     });
 </script>
 @endsection
+
 
 

@@ -1,5 +1,13 @@
 @extends('layouts.app')
 @section('title', $volunteer->user->name)
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+<style>
+    #route-map { height: 350px; width: 100%; border-radius: 12px; margin-top: 20px; border: 1px solid var(--border); display: none; z-index: 1; }
+    .leaflet-routing-container { background: #161616 !important; color: var(--text) !important; border: 1px solid var(--border) !important; border-radius: 8px !important; }
+</style>
+@endsection
 @section('content')
 <div class="page-header">
     <div>
@@ -59,9 +67,11 @@
         <h2 style="font-family:var(--serif);font-size:26px;font-weight:400;color:var(--text);margin-bottom:12px">Flood Evacuation Coordination</h2>
         <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:28px">Sector 4, Riverside District. Assist with immediate perimeter securing and medical triage for incoming evacuees.</p>
         <div style="display:flex;gap:12px">
-            <a href="#" class="btn btn-outline" style="border-color:var(--accent);color:var(--accent)"><i class="fas fa-route"></i> Open Map Route</a>
-            <a href="#" class="btn btn-outline"><i class="fas fa-phone"></i> Contact Unit Lead</a>
+            <button onclick="toggleRoute()" class="btn btn-outline" style="border-color:var(--accent);color:var(--accent)"><i class="fas fa-route"></i> <span id="route-btn-text">Open Map Route</span></button>
+            <a href="tel:{{ $volunteer->agency->contact_phone ?? '#' }}" class="btn btn-outline"><i class="fas fa-phone"></i> Contact Unit Lead</a>
         </div>
+        <div id="route-map"></div>
+
     </div>
 </div>
 
@@ -88,4 +98,81 @@
         <span class="badge badge-critical" style="font-size:10px">Req: Technical</span>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script>
+    let mapInitialized = false;
+    let routeMap;
+
+    function toggleRoute() {
+        const mapDiv = document.getElementById('route-map');
+        const btnText = document.getElementById('route-btn-text');
+        
+        if (mapDiv.style.display === 'none' || mapDiv.style.display === '') {
+            mapDiv.style.display = 'block';
+            btnText.textContent = 'Close Map Route';
+            if (!mapInitialized) {
+                initRouteMap();
+            }
+            setTimeout(() => routeMap.invalidateSize(), 100);
+        } else {
+            mapDiv.style.display = 'none';
+            btnText.textContent = 'Open Map Route';
+        }
+    }
+
+    function initRouteMap() {
+        // Volunteer Current Location (Defaulting to Delhi if not set)
+        const startLat = {{ $volunteer->current_lat ?? 28.6139 }};
+        const startLng = {{ $volunteer->current_lng ?? 77.2090 }};
+        
+        // Target Location (Mocking Sector 4, Riverside District)
+        const endLat = startLat + 0.02;
+        const endLng = startLng + 0.02;
+
+        routeMap = L.map('route-map', { zoomControl: false }).setView([startLat, startLng], 13);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+        }).addTo(routeMap);
+
+        const vIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: '<div style="width:12px;height:12px;background:var(--blue);border-radius:50%;box-shadow:0 0 15px var(--blue);border:2px solid #161616;"></div>',
+            iconSize: [12, 12],
+            iconAnchor: [6, 6]
+        });
+
+        const destIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: '<div style="width:14px;height:14px;background:var(--accent);border-radius:50%;box-shadow:0 0 15px var(--accent);border:2px solid #161616;"></div>',
+            iconSize: [14, 14],
+            iconAnchor: [7, 7]
+        });
+
+        L.Routing.control({
+            waypoints: [
+                L.latLng(startLat, startLng),
+                L.latLng(endLat, endLng)
+            ],
+            lineOptions: {
+                styles: [{ color: 'var(--accent)', opacity: 0.8, weight: 5 }]
+            },
+            createMarker: function(i, wp) {
+                return L.marker(wp.latLng, {
+                    icon: i === 0 ? vIcon : destIcon
+                }).bindPopup(i === 0 ? 'Your Location' : 'Deployment Target');
+            },
+            addWaypoints: false,
+            routeWhileDragging: false,
+            show: true
+        }).addTo(routeMap);
+
+        L.control.zoom({ position: 'bottomright' }).addTo(routeMap);
+        mapInitialized = true;
+    }
+</script>
 @endsection

@@ -47,11 +47,13 @@ class AnalyticsController extends Controller
             ->orderBy('month')
             ->pluck('count', 'month');
 
+        $sosMarkers = SOSRequest::select('latitude', 'longitude', 'severity', 'type', 'status')->get();
+
         return view('analytics.index', compact(
             'rescueRate', 'totalSOS', 'avgResponseTime',
             'sosBySeverity', 'sosByType', 'sosByStatus',
             'disastersByType', 'agenciesByType', 'resourcesByCategory',
-            'monthlySOSTrend'
+            'monthlySOSTrend', 'sosMarkers'
         ));
     }
 }

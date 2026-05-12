@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Emergency SOS')
 @section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
     .sos-hero{text-align:center;margin-bottom:48px}
     .sos-hero h1{font-family:var(--serif,serif);font-size:42px;font-weight:400;letter-spacing:2px;color:var(--accent,#e8735a);margin-bottom:12px}
@@ -97,9 +98,8 @@
     </div>
 
     <div class="sos-panel">
-        <div class="map-placeholder">
-            <div class="gps-badge">GPS Active</div>
-            <div class="map-dot"></div>
+        <div id="sos-map" style="height:200px;border-radius:10px;margin-bottom:16px;border:1px solid var(--border,#1e1e1e);z-index:1;position:relative;">
+            <div class="gps-badge" style="z-index:1000;position:absolute;top:12px;right:12px;">GPS Active</div>
         </div>
         <div class="location-info">
             <div class="section-title-sm" style="font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted,#5a534c);margin-bottom:6px">Current Broadcast Location</div>
@@ -119,6 +119,7 @@
 </div>
 </form>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 function selectType(el, val) {
     document.querySelectorAll('.radio-option').forEach(o => { o.classList.remove('selected'); o.querySelector('.radio-circle').classList.remove('active'); });
@@ -126,12 +127,42 @@ function selectType(el, val) {
     el.querySelector('.radio-circle').classList.add('active');
     document.getElementById('type-input').value = val;
 }
+
+// Initialize Leaflet Map
+let map = L.map('sos-map').setView([28.6139, 77.2090], 13);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+}).addTo(map);
+
+// Custom marker matching the design
+const markerIcon = L.divIcon({
+    className: 'custom-div-icon',
+    html: '<div style="width:14px;height:14px;background:var(--accent,#e8735a);border-radius:50%;box-shadow:0 0 20px rgba(232,115,90,.5);border:2px solid #161616;"></div>',
+    iconSize: [14, 14],
+    iconAnchor: [7, 7]
+});
+
+let marker = L.marker([28.6139, 77.2090], {draggable: true, icon: markerIcon}).addTo(map);
+
+marker.on('dragend', function (e) {
+    let pos = marker.getLatLng();
+    updateLocation(pos.lat, pos.lng);
+});
+
+function updateLocation(lat, lng) {
+    document.getElementById('lat-input').value = lat.toFixed(7);
+    document.getElementById('lng-input').value = lng.toFixed(7);
+    document.getElementById('lat-display').textContent = lat.toFixed(4);
+    document.getElementById('lng-display').textContent = lng.toFixed(4);
+}
+
 if(navigator.geolocation){
     navigator.geolocation.getCurrentPosition(function(p){
-        document.getElementById('lat-input').value=p.coords.latitude.toFixed(7);
-        document.getElementById('lng-input').value=p.coords.longitude.toFixed(7);
-        document.getElementById('lat-display').textContent=p.coords.latitude.toFixed(4);
-        document.getElementById('lng-display').textContent=p.coords.longitude.toFixed(4);
+        let lat = p.coords.latitude;
+        let lng = p.coords.longitude;
+        updateLocation(lat, lng);
+        map.setView([lat, lng], 15);
+        marker.setLatLng([lat, lng]);
     });
 }
 document.querySelector('.radio-option').classList.add('selected');

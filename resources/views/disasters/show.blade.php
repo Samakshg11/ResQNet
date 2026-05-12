@@ -1,5 +1,11 @@
 @extends('layouts.app')
 @section('title', $disaster->title)
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #map { height: 300px; width: 100%; border-radius: 12px; margin-bottom: 24px; border: 1px solid var(--border); z-index: 1; }
+</style>
+@endsection
 @section('content')
 <div class="grid-2">
     <div class="card">
@@ -13,6 +19,7 @@
                 </div>
             </div>
         </div>
+        <div id="map"></div>
         <p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:24px">{{ $disaster->description }}</p>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px">
             <div class="stat-card" style="padding:16px"><div class="stat-card-label">Affected</div><div style="font-size:24px;font-weight:300;color:var(--text);margin-top:8px">{{ number_format($disaster->estimated_affected) }}</div></div>
@@ -42,4 +49,33 @@
         @endforelse
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const lat = {{ $disaster->latitude ?? 22.5 }};
+        const lng = {{ $disaster->longitude ?? 79.0 }};
+        
+        const map = L.map('map', { zoomControl: false }).setView([lat, lng], 10);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+        }).addTo(map);
+
+        const markerIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: '<div style="width:18px;height:18px;background:var(--accent);border-radius:50%;box-shadow:0 0 20px var(--accent);border:3px solid #161616;"></div>',
+            iconSize: [18, 18],
+            iconAnchor: [9, 9]
+        });
+
+        L.marker([lat, lng], { icon: markerIcon }).addTo(map)
+         .bindPopup('<div style="font-weight:600;color:#0a0a0a">{{ $disaster->title }}</div>')
+         .openPopup();
+         
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+    });
+</script>
 @endsection

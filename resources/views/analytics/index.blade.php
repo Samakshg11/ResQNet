@@ -1,9 +1,25 @@
 @extends('layouts.app')
 @section('title', 'Analytics')
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #analytics-map { height: 400px; width: 100%; border-radius: 12px; margin-bottom: 32px; border: 1px solid var(--border); z-index: 1; }
+    .map-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+</style>
+@endsection
 @section('content')
 <div class="page-header">
     <div><h1>Analytics</h1><p>Platform performance metrics and operational intelligence.</p></div>
 </div>
+
+<div class="map-header">
+    <span class="section-title" style="margin-bottom:0">Live Situation Map</span>
+    <div style="display:flex;gap:12px;align-items:center">
+        <span style="font-size:12px;color:var(--text-muted)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--accent);margin-right:4px"></span> Critical</span>
+        <span style="font-size:12px;color:var(--text-muted)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--yellow);margin-right:4px"></span> Warning</span>
+    </div>
+</div>
+<div id="analytics-map"></div>
 
 <div class="stat-grid">
     <div class="stat-card">
@@ -78,4 +94,36 @@
         @endforeach
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const map = L.map('analytics-map', { zoomControl: false }).setView([22.5, 79.0], 5);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
+        }).addTo(map);
+
+        const markers = @json($sosMarkers);
+        
+        markers.forEach(m => {
+            if (m.latitude && m.longitude) {
+                const color = m.severity === 'critical' ? 'var(--accent)' : (m.severity === 'high' ? 'var(--yellow)' : 'var(--blue)');
+                const markerIcon = L.divIcon({
+                    className: 'custom-div-icon',
+                    html: `<div style="width:10px;height:10px;background:${color};border-radius:50%;box-shadow:0 0 10px ${color};"></div>`,
+                    iconSize: [10, 10],
+                    iconAnchor: [5, 5]
+                });
+
+                L.marker([m.latitude, m.longitude], { icon: markerIcon }).addTo(map)
+                 .bindPopup(`<div style="font-size:12px;font-weight:600;color:#0a0a0a">${m.type.toUpperCase()}</div><div style="font-size:10px;color:#666">${m.status}</div>`);
+            }
+        });
+        
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+    });
+</script>
 @endsection

@@ -43,7 +43,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const map = L.map('map').setView([22.5, 79.0], 5);
+        const map = L.map('map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
         
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
@@ -56,7 +56,7 @@
             iconAnchor: [7, 7]
         });
 
-        let marker = L.marker([22.5, 79.0], { draggable: true, icon: markerIcon }).addTo(map);
+        let marker = L.marker([20.5937, 78.9629], { draggable: true, icon: markerIcon }).addTo(map);
 
         function updateInputs(lat, lng) {
             document.getElementById('lat-input').value = lat.toFixed(7);

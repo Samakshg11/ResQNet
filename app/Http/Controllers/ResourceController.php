@@ -55,16 +55,22 @@ class ResourceController extends Controller
     public function deploy(Request $request, string $id)
     {
         $resource = Resource::findOrFail($id);
+
+        if ($resource->status === 'depleted' || $resource->available_quantity === 0) {
+            return back()->withErrors(['quantity' => 'This resource is depleted and cannot be deployed.']);
+        }
+
         $qty = $request->validate(['quantity' => 'required|integer|min:1'])['quantity'];
 
         if ($qty > $resource->available_quantity) {
             return back()->withErrors(['quantity' => 'Insufficient quantity available.']);
         }
 
+        $remaining = $resource->available_quantity - $qty;
         $resource->update([
-            'available_quantity' => $resource->available_quantity - $qty,
+            'available_quantity' => $remaining,
             'deployed_quantity' => $resource->deployed_quantity + $qty,
-            'status' => ($resource->available_quantity - $qty) === 0 ? 'depleted' : 'available',
+            'status' => $remaining === 0 ? 'depleted' : 'available',
         ]);
 
         return redirect()->back()->with('success', 'Resource deployed.');

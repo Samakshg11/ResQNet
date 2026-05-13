@@ -51,6 +51,10 @@ class AgencyController extends Controller
             'total_teams' => 'nullable|integer|min:0',
         ]);
 
+        $validated['registration_number'] = strtoupper(trim($validated['registration_number']));
+        $validated['contact_email'] = strtolower(trim($validated['contact_email']));
+        $validated['contact_phone'] = trim($validated['contact_phone']);
+
         $validated['user_id'] = $request->user()->id;
         $validated['status'] = 'pending';
         $validated['country'] = 'IND';

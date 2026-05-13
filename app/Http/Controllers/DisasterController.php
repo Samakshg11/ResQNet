@@ -34,9 +34,9 @@ class DisasterController extends Controller
             'description' => 'required|string',
             'type' => 'required|in:flood,earthquake,cyclone,fire,landslide,tsunami,drought,industrial,other',
             'severity' => 'required|in:low,medium,high,critical',
-            'epicenter_lat' => 'nullable|numeric',
-            'epicenter_lng' => 'nullable|numeric',
-            'radius_km' => 'nullable|numeric',
+            'epicenter_lat' => 'nullable|numeric|between:-90,90',
+            'epicenter_lng' => 'nullable|numeric|between:-180,180',
+            'radius_km' => 'nullable|numeric|min:0',
             'estimated_affected' => 'nullable|integer|min:0',
         ]);
 

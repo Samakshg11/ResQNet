@@ -88,14 +88,21 @@ class SOSController extends Controller
     {
         $sos = SOSRequest::findOrFail($id);
         $request->validate(['status' => 'required|in:pending,assigned,dispatched,en_route,resolved,cancelled']);
+        $nextStatus = $request->status;
 
-        $data = ['status' => $request->status];
+        if (in_array($nextStatus, ['assigned', 'dispatched', 'en_route'], true) && ! $sos->assigned_agency_id) {
+            return back()->withErrors(['status' => 'Assign an agency before moving to operational statuses.']);
+        }
 
-        if ($request->status === 'resolved') {
+        $data = ['status' => $nextStatus];
+
+        if ($nextStatus === 'resolved') {
             $data['resolved_at'] = now();
             if ($sos->assigned_at) {
                 $data['response_time_minutes'] = now()->diffInMinutes($sos->assigned_at);
             }
+        } elseif ($sos->resolved_at) {
+            $data['resolved_at'] = null;
         }
 
         $sos->update($data);

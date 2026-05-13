@@ -37,6 +37,14 @@ class ResourceController extends Controller
             'minimum_threshold' => 'nullable|integer|min:0',
         ]);
 
+        if ($validated['available_quantity'] > $validated['total_quantity']) {
+            return back()
+                ->withErrors(['available_quantity' => 'Available quantity cannot exceed total quantity.'])
+                ->withInput();
+        }
+
+        $validated['minimum_threshold'] = $validated['minimum_threshold'] ?? 0;
+
         $validated['status'] = 'available';
 
         Resource::create($validated);

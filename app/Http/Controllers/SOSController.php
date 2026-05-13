@@ -66,8 +66,17 @@ class SOSController extends Controller
         $sos = SOSRequest::findOrFail($id);
         $request->validate(['agency_id' => 'required|exists:agencies,id']);
 
+        if (in_array($sos->status, ['resolved', 'cancelled'], true)) {
+            return back()->withErrors(['agency_id' => 'Cannot assign an agency to a closed SOS request.']);
+        }
+
+        $agency = Agency::where('status', 'verified')->find($request->agency_id);
+        if (! $agency) {
+            return back()->withErrors(['agency_id' => 'Only verified agencies can be assigned.']);
+        }
+
         $sos->update([
-            'assigned_agency_id' => $request->agency_id,
+            'assigned_agency_id' => $agency->id,
             'status' => 'assigned',
             'assigned_at' => now(),
         ]);

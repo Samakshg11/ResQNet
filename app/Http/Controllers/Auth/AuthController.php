@@ -21,6 +21,7 @@ class AuthController extends Controller
             'email' => 'required|email',
             'password' => 'required',
         ]);
+        $credentials['email'] = strtolower(trim($credentials['email']));
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
@@ -49,6 +50,7 @@ class AuthController extends Controller
             'role' => 'in:volunteer,victim',
             'phone' => 'nullable|string|max:20',
         ]);
+        $validated['email'] = strtolower(trim($validated['email']));
 
         $user = User::create([
             'name' => $validated['name'],
@@ -59,6 +61,7 @@ class AuthController extends Controller
         ]);
 
         Auth::login($user);
+        $request->session()->regenerate();
 
         return redirect('/dashboard');
     }

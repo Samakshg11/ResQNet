@@ -69,7 +69,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/alerts', [AlertController::class, 'store'])->name('alerts.store');
 
     // Analytics
-    // Analytics
     Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
     // Profile

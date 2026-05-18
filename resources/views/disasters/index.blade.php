@@ -48,11 +48,9 @@
 <div class="map-container">
     <div id="map"></div>
     
-    <div class="map-overlay-bottom">
-        <button class="dispatch-btn">
-            <i class="fas fa-bullhorn"></i> Emergency Dispatch
-        </button>
-    </div>
+    
+    
+
     
     <div class="map-overlay-controls">
         <button class="map-btn" onclick="map.zoomIn()"><i class="fas fa-plus"></i></button>
@@ -129,7 +127,6 @@
                     <div style="font-size:12px;color:var(--text-secondary);margin-bottom:12px">${d.description ? d.description.substring(0,60)+'...' : ''}</div>
                     <div style="display:flex;gap:8px">
                         <a href="/disasters/${d.id}" style="flex:1;text-align:center;padding:6px;background:var(--border);color:var(--text);border-radius:4px;font-size:11px;font-weight:600;text-decoration:none;">Details</a>
-                        <button style="flex:1;padding:6px;background:var(--accent);color:#0a0a0a;border:none;border-radius:4px;font-size:11px;font-weight:600;cursor:pointer;">Dispatch</button>
                     </div>
                 </div>
             `;

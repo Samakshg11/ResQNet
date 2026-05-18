@@ -65,10 +65,39 @@
             .stats-row{grid-template-columns:1fr}
             .nav-center{display:none}
             .footer-landing{flex-direction:column;gap:24px}
+            .features-section{padding:80px 24px}
+            .map-section{padding:60px 24px}
+            .section-title{font-size:32px}
         }
+
+        /* Features Section */
+        .features-section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; border-top: 1px solid var(--border); position: relative; }
+        .section-title { font-family: var(--serif); font-size: 48px; color: var(--text); margin-bottom: 20px; text-align: center; }
+        .section-subtitle { font-size: 16px; color: var(--text2); text-align: center; max-width: 600px; margin: 0 auto 60px; line-height: 1.6; }
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
+        .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 40px; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: var(--accent); }
+        .feature-icon { width: 48px; height: 48px; background: rgba(232,115,90,.1); color: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 24px; }
+        .feature-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
+        .feature-desc { font-size: 14px; color: var(--text2); line-height: 1.7; }
+        
+        /* Interactive Map Section Placeholder */
+        .map-section { padding: 100px 48px; background: rgba(15,15,15,0.5); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+        .map-container-wrapper { max-width: 1200px; margin: 0 auto; text-align: center; }
+        .map-visual { width: 100%; height: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 40px; position: relative; overflow: hidden; }
+        .map-visual::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0%, var(--card) 100%); z-index: 1; pointer-events: none; }
+        .map-visual i { font-size: 64px; color: var(--muted); margin-bottom: 20px; z-index: 2; }
+        .map-visual p { color: var(--text2); font-size: 16px; z-index: 2; font-weight: 500; }
+        
+        /* Grid Background for empty spaces */
+        .grid-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; z-index: -1; pointer-events: none; }
+        
+        .footer-landing { margin-top: 0; }
+        
     </style>
 </head>
 <body>
+    <div class="grid-bg"></div>
     <nav class="navbar">
         <a href="/" class="nav-brand">ResQNet</a>
         <div class="nav-center">
@@ -128,6 +157,60 @@
                 <div class="stat-box-tags">
                     <span>Vehicles</span><span>Personnel</span><span>Medical</span>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-section">
+        <h2 class="section-title">Comprehensive Response Tools</h2>
+        <p class="section-subtitle">A unified platform integrating real-time intelligence, resource tracking, and inter-agency communication to streamline emergency management.</p>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
+                <h3 class="feature-title">Real-Time SOS Tracking</h3>
+                <p class="feature-desc">Instantly locate and prioritize emergency requests with precision GPS tracking. Allocate resources efficiently to areas with the highest critical needs.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-network-wired"></i></div>
+                <h3 class="feature-title">Inter-Agency Network</h3>
+                <p class="feature-desc">Seamlessly communicate and collaborate with verified NGOs, government bodies, and medical units on a unified, secure dashboard.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                <h3 class="feature-title">Advanced Analytics</h3>
+                <p class="feature-desc">Monitor disaster metrics, resource deployment statuses, and post-mission impact through interactive charts and aggregated data reports.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-truck-medical"></i></div>
+                <h3 class="feature-title">Resource Management</h3>
+                <p class="feature-desc">Track available vehicles, personnel, and medical supplies in real-time to ensure rapid deployment without logistical bottlenecks.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-tower-broadcast"></i></div>
+                <h3 class="feature-title">Disaster Alerts</h3>
+                <p class="feature-desc">Automated, region-specific alert broadcasts notify local authorities and registered volunteers immediately upon disaster verification.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-shield-virus"></i></div>
+                <h3 class="feature-title">Secure & Sovereign</h3>
+                <p class="feature-desc">Built with enterprise-grade encryption and hosted on resilient infrastructure ensuring operational continuity during infrastructure failures.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="map-section">
+        <div class="map-container-wrapper">
+            <h2 class="section-title">Global Coordination Map</h2>
+            <p class="section-subtitle">Visualize ongoing operations, track live responder movements, and identify disaster epicenters across multiple jurisdictions in one unified view.</p>
+            <div class="map-visual">
+                <i class="fas fa-map-location-dot"></i>
+                <p>Interactive Map Dashboard Available Post-Login</p>
+                <div style="position:absolute; top:30%; left:20%; width:10px; height:10px; background:var(--accent); border-radius:50%; box-shadow:0 0 15px var(--accent); animation:pulse 2s infinite;"></div>
+                <div style="position:absolute; top:60%; left:70%; width:15px; height:15px; background:var(--peach); border-radius:50%; box-shadow:0 0 20px var(--peach); animation:pulse 1.5s infinite;"></div>
+                <div style="position:absolute; top:40%; left:80%; width:8px; height:8px; background:#4caf50; border-radius:50%; box-shadow:0 0 10px #4caf50; animation:pulse 3s infinite;"></div>
+                <div style="position:absolute; top:75%; left:35%; width:12px; height:12px; background:var(--accent); border-radius:50%; box-shadow:0 0 15px var(--accent); animation:pulse 2.5s infinite;"></div>
+                <div style="position:absolute; top:20%; left:60%; width:9px; height:9px; background:#2196f3; border-radius:50%; box-shadow:0 0 12px #2196f3; animation:pulse 1.8s infinite;"></div>
             </div>
         </div>
     </section>

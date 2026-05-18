@@ -110,7 +110,7 @@
             <span class="nav-icon"><i class="fas fa-search"></i></span>
             <span class="nav-icon"><i class="fas fa-bell"></i></span>
             @auth
-                <a href="{{ route('sos.create') }}" class="btn-report">Report Emergency</a>
+                <a href="{{ route('sos.my') }}" class="btn-report">Report Emergency</a>
             @else
                 <a href="{{ route('login') }}" class="btn-report">Report Emergency</a>
             @endauth
@@ -123,7 +123,7 @@
         <p>The centralized intelligence hub for disaster response. Real-time mapping, resource allocation, and multi-agency coordination deployed securely on sovereign infrastructure.</p>
         <div class="hero-buttons">
             @auth
-                <a href="{{ route('sos.create') }}" class="btn-hero btn-hero-primary"><i class="fas fa-asterisk"></i> Report Emergency</a>
+                <a href="{{ route('sos.my') }}" class="btn-hero btn-hero-primary"><i class="fas fa-asterisk"></i> Report Emergency</a>
                 <a href="{{ route('dashboard') }}" class="btn-hero btn-hero-secondary"><i class="fas fa-map-marked-alt"></i> View Live Map</a>
             @else
                 <a href="{{ route('register') }}" class="btn-hero btn-hero-primary"><i class="fas fa-asterisk"></i> Report Emergency</a>

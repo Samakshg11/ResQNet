@@ -3,7 +3,7 @@
 @section('content')
 <div class="page-header">
     <div><h1>SOS Feed</h1><p>Real-time emergency distress signals across all sectors.</p></div>
-    <a href="{{ route('sos.create') }}" class="btn btn-primary btn-sm"><i class="fas fa-asterisk"></i> New SOS</a>
+
 </div>
 <div class="card">
     <div class="table-wrap">

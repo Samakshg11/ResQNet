@@ -350,9 +350,23 @@
             <div class="subtitle">Regional Command Unit</div>
         </div>
         <div class="sidebar-dispatch">
-            <a href="{{ route('sos.create') }}" class="btn-dispatch">
-                <i class="fas fa-asterisk"></i> Emergency Dispatch
-            </a>
+            @if(auth()->user()->role === 'gov_admin' || auth()->user()->role === 'super_admin')
+                <a href="{{ route('sos.index') }}" class="btn-dispatch">
+                    <i class="fas fa-asterisk"></i> SOS Directory
+                </a>
+            @elseif(auth()->user()->role === 'agency_admin')
+                <a href="{{ route('sos.feed') }}" class="btn-dispatch">
+                    <i class="fas fa-asterisk"></i> Active Dispatch
+                </a>
+            @elseif(auth()->user()->role === 'volunteer')
+                <a href="{{ route('volunteer.dashboard') }}" class="btn-dispatch">
+                    <i class="fas fa-asterisk"></i> My Missions
+                </a>
+            @else
+                <a href="#" class="btn-dispatch">
+                    <i class="fas fa-asterisk"></i> Dashboard
+                </a>
+            @endif
         </div>
         <nav class="sidebar-nav">
         <nav class="sidebar-nav">
@@ -455,7 +469,7 @@
         </div>
         <div class="topnav-right">
             <div class="topnav-icon"><i class="fas fa-bell"></i></div>
-            <a href="{{ route('sos.create') }}" class="btn-report">Report Emergency</a>
+            <a href="{{ auth()->user()->role === 'gov_admin' ? route('sos.index') : (auth()->user()->role === 'agency_admin' ? route('sos.feed') : '#') }}" class="btn-report">Command Center</a>
             <form method="POST" action="{{ route('logout') }}" style="display:inline;">
                 @csrf
                 <button type="submit" class="topnav-icon" style="background:transparent; border:none;" title="Logout">

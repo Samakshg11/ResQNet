@@ -50,14 +50,21 @@ class DatabaseSeeder extends Seeder
         ];
 
         $agencies = [];
+        $index = 0;
         foreach ($agencyData as $data) {
+            $email = strtolower(str_replace(' ', '.', $data['name'])) . '@resqnet.org';
+            if ($index === 0) $email = 'ndrf@resqnet.org';
+            if ($index === 1) $email = 'redcross@resqnet.org';
+            
             $user = User::create([
                 'name' => $data['name'] . ' Admin',
-                'email' => strtolower(str_replace(' ', '.', $data['name'])) . '@resqnet.org',
+                'email' => $email,
                 'password' => Hash::make('Agency@2026!'),
                 'role' => 'agency_admin',
                 'email_verified_at' => now(),
             ]);
+            
+            $index++;
 
             $agencies[] = Agency::create([
                 'user_id' => $user->id,
@@ -152,12 +159,21 @@ class DatabaseSeeder extends Seeder
         $severities = ['critical', 'high', 'medium', 'low'];
         $statuses = ['pending', 'assigned', 'dispatched', 'en_route', 'resolved'];
 
+        // Victim 1 exact account
+        $victim1 = User::create([
+            'name' => 'John Doe',
+            'email' => 'victim1@resqnet.org',
+            'password' => Hash::make('Victim@2026!'),
+            'role' => 'victim',
+            'email_verified_at' => now(),
+        ]);
+
         for ($i = 0; $i < 35; $i++) {
             $status = $statuses[array_rand($statuses)];
             SOSRequest::create([
-                'user_id' => $admin->id,
+                'user_id' => $i === 0 ? $victim1->id : $admin->id,
                 'disaster_id' => $disasters[array_rand($disasters)]->id,
-                'victim_name' => fake()->name(),
+                'victim_name' => $i === 0 ? $victim1->name : fake()->name(),
                 'victim_phone' => '+91-' . rand(9000000000, 9999999999),
                 'victim_count' => rand(1, 15),
                 'latitude' => rand(8, 35) + rand(0, 999999) / 1000000,
@@ -216,7 +232,7 @@ class DatabaseSeeder extends Seeder
         for ($i = 0; $i < 25; $i++) {
             $volUser = User::create([
                 'name' => fake()->name(),
-                'email' => 'volunteer' . ($i + 1) . '@resqnet.org',
+                'email' => $i === 0 ? 'volunteer1@resqnet.org' : 'volunteer' . ($i + 1) . '@resqnet.org',
                 'password' => Hash::make('Vol@2026!'),
                 'role' => 'volunteer',
                 'email_verified_at' => now(),
@@ -225,7 +241,7 @@ class DatabaseSeeder extends Seeder
 
             Volunteer::create([
                 'user_id' => $volUser->id,
-                'agency_id' => $agencies[array_rand($agencies)]->id,
+                'agency_id' => $i === 0 ? $agencies[0]->id : $agencies[array_rand($agencies)]->id,
                 'skills' => array_values(array_intersect_key($skills, array_flip(array_rand($skills, rand(2, 5))))),
                 'languages' => ['Hindi', 'English'],
                 'bio' => fake()->sentence(10),

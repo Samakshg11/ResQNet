@@ -355,34 +355,72 @@
             </a>
         </div>
         <nav class="sidebar-nav">
-            <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="fas fa-th-large"></i> Command Center
-            </a>
-            <a href="{{ route('agencies.index') }}" class="nav-item {{ request()->routeIs('agencies.*') ? 'active' : '' }}">
-                <i class="fas fa-building"></i> Agency Management
-            </a>
-            <a href="{{ route('disasters.index') }}" class="nav-item {{ request()->routeIs('disasters.*') ? 'active' : '' }}">
-                <i class="fas fa-map-marked-alt"></i> Disaster Map
-            </a>
-            <a href="{{ route('sos.index') }}" class="nav-item {{ request()->routeIs('sos.*') ? 'active' : '' }}">
-                <i class="fas fa-asterisk"></i> SOS Feed
-                @php $pc = \App\Models\SOSRequest::where('status','pending')->count(); @endphp
-                @if($pc > 0)<span class="count">{{ $pc }}</span>@endif
-            </a>
-            <a href="{{ route('analytics.index') }}" class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}">
-                <i class="fas fa-chart-line"></i> Analytics
-            </a>
+        <nav class="sidebar-nav">
+            @if(auth()->user()->role === 'gov_admin' || auth()->user()->role === 'super_admin')
+                <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-th-large"></i> Command Center
+                </a>
+                <a href="{{ route('agencies.index') }}" class="nav-item {{ request()->routeIs('agencies.*') ? 'active' : '' }}">
+                    <i class="fas fa-building"></i> Agency Management
+                </a>
+                <a href="{{ route('disasters.index') }}" class="nav-item {{ request()->routeIs('disasters.*') ? 'active' : '' }}">
+                    <i class="fas fa-map-marked-alt"></i> Disaster Map
+                </a>
+                <a href="{{ route('sos.index') }}" class="nav-item {{ request()->routeIs('sos.*') ? 'active' : '' }}">
+                    <i class="fas fa-asterisk"></i> SOS Feed
+                    @php $pc = \App\Models\SOSRequest::where('status','pending')->count(); @endphp
+                    @if($pc > 0)<span class="count">{{ $pc }}</span>@endif
+                </a>
+                <a href="{{ route('analytics.index') }}" class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+            @elseif(auth()->user()->role === 'agency_admin')
+                <a href="{{ route('agency.dashboard') }}" class="nav-item {{ request()->routeIs('agency.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-th-large"></i> Agency Dashboard
+                </a>
+                <a href="{{ route('sos.feed') }}" class="nav-item {{ request()->routeIs('sos.feed') ? 'active' : '' }}">
+                    <i class="fas fa-asterisk"></i> SOS Feed
+                </a>
+                <a href="{{ route('agency.disasters.index') }}" class="nav-item {{ request()->routeIs('agency.disasters.*') ? 'active' : '' }}">
+                    <i class="fas fa-map-marked-alt"></i> Disasters
+                </a>
+                <a href="{{ route('agency.analytics.index') }}" class="nav-item {{ request()->routeIs('agency.analytics.*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i> Analytics
+                </a>
+            @elseif(auth()->user()->role === 'volunteer')
+                <a href="{{ route('volunteer.dashboard') }}" class="nav-item {{ request()->routeIs('volunteer.dashboard') ? 'active' : '' }}">
+                    <i class="fas fa-th-large"></i> Volunteer Hub
+                </a>
+                <a href="{{ route('volunteer.profile.edit') }}" class="nav-item {{ request()->routeIs('volunteer.profile.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-circle"></i> My Profile
+                </a>
+            @endif
         </nav>
         <div class="sidebar-bottom">
-            <a href="{{ route('resources.index') }}" class="nav-item {{ request()->routeIs('resources.*') ? 'active' : '' }}">
-                <i class="fas fa-boxes-stacked"></i> Resources
-            </a>
-            <a href="{{ route('volunteers.index') }}" class="nav-item {{ request()->routeIs('volunteers.*') ? 'active' : '' }}">
-                <i class="fas fa-user-group"></i> Volunteers
-            </a>
-            <a href="{{ route('alerts.index') }}" class="nav-item {{ request()->routeIs('alerts.*') ? 'active' : '' }}">
-                <i class="fas fa-cog"></i> Alerts
-            </a>
+            @if(auth()->user()->role === 'gov_admin' || auth()->user()->role === 'super_admin')
+                <a href="{{ route('resources.index') }}" class="nav-item {{ request()->routeIs('resources.*') ? 'active' : '' }}">
+                    <i class="fas fa-boxes-stacked"></i> Resources
+                </a>
+                <a href="{{ route('volunteers.index') }}" class="nav-item {{ request()->routeIs('volunteers.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-group"></i> Volunteers
+                </a>
+                <a href="{{ route('alerts.index') }}" class="nav-item {{ request()->routeIs('alerts.*') ? 'active' : '' }}">
+                    <i class="fas fa-cog"></i> Alerts
+                </a>
+            @elseif(auth()->user()->role === 'agency_admin')
+                <a href="{{ route('agency.resources.index') }}" class="nav-item {{ request()->routeIs('agency.resources.*') ? 'active' : '' }}">
+                    <i class="fas fa-boxes-stacked"></i> Resources
+                </a>
+                <a href="{{ route('volunteers.my') }}" class="nav-item {{ request()->routeIs('volunteers.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-group"></i> Volunteers
+                </a>
+                <a href="{{ route('agency.alerts.index') }}" class="nav-item {{ request()->routeIs('agency.alerts.*') ? 'active' : '' }}">
+                    <i class="fas fa-cog"></i> Alerts
+                </a>
+                <a href="{{ route('agency.my') }}" class="nav-item {{ request()->routeIs('agency.my') ? 'active' : '' }}">
+                    <i class="fas fa-building"></i> Agency Profile
+                </a>
+            @endif
         </div>
         <div class="user-block" style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; align-items: center; justify-content: space-between;">
             <a href="{{ route('profile.edit') }}" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
@@ -405,10 +443,15 @@
     <nav class="topnav">
         <div class="topnav-brand">ResQNet</div>
         <div class="topnav-links">
-            <a href="{{ route('agencies.index') }}" class="{{ request()->routeIs('agencies.*') ? 'active' : '' }}">Agency</a>
-            <a href="{{ route('disasters.index') }}" class="{{ request()->routeIs('disasters.*') ? 'active' : '' }}">Disasters</a>
-            <a href="{{ route('sos.index') }}" class="{{ request()->routeIs('sos.*') ? 'active' : '' }}">SOS</a>
-            <a href="{{ route('analytics.index') }}" class="{{ request()->routeIs('analytics.*') ? 'active' : '' }}">Analytics</a>
+            @if(auth()->user()->role === 'gov_admin' || auth()->user()->role === 'super_admin')
+                <a href="{{ route('agencies.index') }}" class="{{ request()->routeIs('agencies.*') ? 'active' : '' }}">Agency</a>
+                <a href="{{ route('disasters.index') }}" class="{{ request()->routeIs('disasters.*') ? 'active' : '' }}">Disasters</a>
+                <a href="{{ route('sos.index') }}" class="{{ request()->routeIs('sos.*') ? 'active' : '' }}">SOS</a>
+                <a href="{{ route('analytics.index') }}" class="{{ request()->routeIs('analytics.*') ? 'active' : '' }}">Analytics</a>
+            @elseif(auth()->user()->role === 'agency_admin')
+                <a href="{{ route('agency.disasters.index') }}" class="{{ request()->routeIs('agency.disasters.*') ? 'active' : '' }}">Disasters</a>
+                <a href="{{ route('sos.feed') }}" class="{{ request()->routeIs('sos.*') ? 'active' : '' }}">SOS</a>
+            @endif
         </div>
         <div class="topnav-right">
             <div class="topnav-icon"><i class="fas fa-bell"></i></div>

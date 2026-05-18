@@ -129,7 +129,7 @@ function selectType(el, val) {
 }
 
 // Initialize Leaflet Map (Broad view initially, will refine with geolocation)
-let map = L.map('sos-map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
+let map = L.map('sos-map', { zoomControl: false }).setView([28.6139, 77.2090], 13);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
 }).addTo(map);
@@ -163,6 +163,31 @@ if(navigator.geolocation){
         updateLocation(lat, lng);
         map.setView([lat, lng], 15);
         marker.setLatLng([lat, lng]);
+    }, function(error) {
+        console.warn('Geolocation failed:', error.message);
+        let gpsBadge = document.querySelector('.gps-badge');
+        if (gpsBadge) {
+            gpsBadge.textContent = 'GPS Unavailable (Drag Pin)';
+            gpsBadge.style.color = 'var(--accent, #e8735a)';
+        }
+        
+        fetch('https://ipapi.co/json/')
+            .then(res => res.json())
+            .then(data => {
+                if(data.latitude && data.longitude) {
+                    updateLocation(data.latitude, data.longitude);
+                    map.setView([data.latitude, data.longitude], 14);
+                    marker.setLatLng([data.latitude, data.longitude]);
+                    if(gpsBadge) {
+                        gpsBadge.textContent = 'Approx. Location (Drag Pin)';
+                        gpsBadge.style.color = '#f4be37';
+                    }
+                }
+            }).catch(e => console.log('IP fallback failed', e));
+    }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
     });
 }
 document.querySelector('.radio-option').classList.add('selected');

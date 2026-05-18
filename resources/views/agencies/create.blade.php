@@ -43,7 +43,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const map = L.map('map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
+        const map = L.map('map', { zoomControl: false }).setView([28.6139, 77.2090], 13);
         
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
@@ -56,7 +56,7 @@
             iconAnchor: [7, 7]
         });
 
-        let marker = L.marker([20.5937, 78.9629], { draggable: true, icon: markerIcon }).addTo(map);
+        let marker = L.marker([28.6139, 77.2090], { draggable: true, icon: markerIcon }).addTo(map);
 
         function updateInputs(lat, lng) {
             document.getElementById('lat-input').value = lat.toFixed(7);
@@ -79,6 +79,21 @@
                 map.setView([lat, lng], 13);
                 marker.setLatLng([lat, lng]);
                 updateInputs(lat, lng);
+            }, function(error) {
+                console.warn("Geolocation failed or blocked:", error.message);
+                fetch('https://ipapi.co/json/')
+                    .then(res => res.json())
+                    .then(data => {
+                        if(data.latitude && data.longitude) {
+                            map.setView([data.latitude, data.longitude], 14);
+                            marker.setLatLng([data.latitude, data.longitude]);
+                            updateInputs(data.latitude, data.longitude);
+                        }
+                    }).catch(e => console.log('IP fallback failed', e));
+            }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
             });
         }
     });

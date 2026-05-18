@@ -85,7 +85,12 @@ class SOSController extends Controller
         $validated['status'] = 'pending';
 
         $sos = SOSRequest::create($validated);
-        broadcast(new \App\Events\NewSOSRequest($sos));
+        
+        try {
+            broadcast(new \App\Events\NewSOSRequest($sos));
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to broadcast NewSOSRequest: ' . $e->getMessage());
+        }
 
         if ($request->user()->role === 'victim') {
             return redirect()->route('sos.my')->with('success', 'SOS request sent successfully! Help is on the way.');

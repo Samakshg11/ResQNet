@@ -538,8 +538,8 @@
                 document.getElementById('type-input').value = val;
             }
             
-            // Default center India
-            let map = L.map('sos-map', { zoomControl: false }).setView([20.5937, 78.9629], 5);
+            // Default center Delhi
+            let map = L.map('sos-map', { zoomControl: false }).setView([28.6139, 77.2090], 13);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
             }).addTo(map);
@@ -551,7 +551,7 @@
                 iconAnchor: [7, 7]
             });
             
-            let marker = L.marker([20.5937, 78.9629], {draggable: true, icon: markerIcon}).addTo(map);
+            let marker = L.marker([28.6139, 77.2090], {draggable: true, icon: markerIcon}).addTo(map);
             
             marker.on('dragend', function (e) {
                 let pos = marker.getLatLng();
@@ -572,6 +572,30 @@
                     updateLocation(lat, lng);
                     map.setView([lat, lng], 15);
                     marker.setLatLng([lat, lng]);
+                }, function(error) {
+                    console.warn('Geolocation failed:', error.message);
+                    let badge = document.querySelector('.gps-badge');
+                    if (badge) {
+                        badge.textContent = 'GPS Unavailable (Drag Pin)';
+                        badge.style.color = 'var(--accent, #e8735a)';
+                    }
+                    fetch('https://ipapi.co/json/')
+                        .then(res => res.json())
+                        .then(data => {
+                            if(data.latitude && data.longitude) {
+                                updateLocation(data.latitude, data.longitude);
+                                map.setView([data.latitude, data.longitude], 14);
+                                marker.setLatLng([data.latitude, data.longitude]);
+                                if(badge) {
+                                    badge.textContent = 'Approx. Location (Drag Pin)';
+                                    badge.style.color = '#f4be37';
+                                }
+                            }
+                        }).catch(e => console.log('IP fallback failed', e));
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
                 });
             }
             document.querySelector('.radio-option').classList.add('selected');

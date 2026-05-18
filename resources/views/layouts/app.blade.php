@@ -369,7 +369,6 @@
             @endif
         </div>
         <nav class="sidebar-nav">
-        <nav class="sidebar-nav">
             @if(auth()->user()->role === 'gov_admin' || auth()->user()->role === 'super_admin')
                 <a href="{{ route('dashboard') }}" class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-th-large"></i> Command Center
@@ -378,15 +377,10 @@
                     <i class="fas fa-building"></i> Agency Management
                 </a>
                 <a href="{{ route('disasters.index') }}" class="nav-item {{ request()->routeIs('disasters.*') ? 'active' : '' }}">
-                    <i class="fas fa-map-marked-alt"></i> Disaster Map
-                </a>
-                <a href="{{ route('sos.index') }}" class="nav-item {{ request()->routeIs('sos.*') ? 'active' : '' }}">
-                    <i class="fas fa-asterisk"></i> SOS Feed
-                    @php $pc = \App\Models\SOSRequest::where('status','pending')->count(); @endphp
-                    @if($pc > 0)<span class="count">{{ $pc }}</span>@endif
+                    <i class="fas fa-tower-broadcast"></i> Disaster Feed
                 </a>
                 <a href="{{ route('analytics.index') }}" class="nav-item {{ request()->routeIs('analytics.*') ? 'active' : '' }}">
-                    <i class="fas fa-chart-line"></i> Analytics
+                    <i class="fas fa-map-location-dot"></i> Disaster Map
                 </a>
             @elseif(auth()->user()->role === 'agency_admin')
                 <a href="{{ route('agency.dashboard') }}" class="nav-item {{ request()->routeIs('agency.dashboard') ? 'active' : '' }}">
@@ -455,27 +449,15 @@
 
     {{-- Top Nav --}}
     <nav class="topnav">
-        <div class="topnav-brand">ResQNet</div>
-        <div class="topnav-links">
-            @if(auth()->user()->role === 'gov_admin' || auth()->user()->role === 'super_admin')
-                <a href="{{ route('agencies.index') }}" class="{{ request()->routeIs('agencies.*') ? 'active' : '' }}">Agency</a>
-                <a href="{{ route('disasters.index') }}" class="{{ request()->routeIs('disasters.*') ? 'active' : '' }}">Disasters</a>
-                <a href="{{ route('sos.index') }}" class="{{ request()->routeIs('sos.*') ? 'active' : '' }}">SOS</a>
-                <a href="{{ route('analytics.index') }}" class="{{ request()->routeIs('analytics.*') ? 'active' : '' }}">Analytics</a>
-            @elseif(auth()->user()->role === 'agency_admin')
-                <a href="{{ route('agency.disasters.index') }}" class="{{ request()->routeIs('agency.disasters.*') ? 'active' : '' }}">Disasters</a>
-                <a href="{{ route('sos.feed') }}" class="{{ request()->routeIs('sos.*') ? 'active' : '' }}">SOS</a>
-            @endif
+        <div style="font-size:13px; font-weight:600; color:var(--text-secondary); display:flex; align-items:center; gap:8px;">
+            <span class="live-dot" style="margin-left:0"></span>
+            LIVE COORDINATION ACTIVE
         </div>
         <div class="topnav-right">
-            <div class="topnav-icon"><i class="fas fa-bell"></i></div>
-            <a href="{{ auth()->user()->role === 'gov_admin' ? route('sos.index') : (auth()->user()->role === 'agency_admin' ? route('sos.feed') : '#') }}" class="btn-report">Command Center</a>
-            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
-                @csrf
-                <button type="submit" class="topnav-icon" style="background:transparent; border:none;" title="Logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                </button>
-            </form>
+            <div class="topnav-icon" title="Notifications"><i class="fas fa-bell"></i></div>
+            <div style="font-size: 11px; font-weight: 700; padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px;">
+                {{ str_replace('_', ' ', auth()->user()->role) }}
+            </div>
         </div>
     </nav>
 

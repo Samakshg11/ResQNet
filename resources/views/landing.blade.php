@@ -101,19 +101,22 @@
     <nav class="navbar">
         <a href="/" class="nav-brand">ResQNet</a>
         <div class="nav-center">
-            <a href="{{ route('agencies.index') }}">Agency</a>
-            <a href="{{ route('disasters.index') }}">Disasters</a>
-            <a href="{{ route('sos.index') }}">SOS</a>
-            <a href="{{ route('analytics.index') }}">Analytics</a>
+            <a href="{{ route('agencies.index') }}">Agency Directory</a>
+            <a href="{{ route('disasters.index') }}">Disaster Feed</a>
+            <a href="{{ route('analytics.index') }}">Disaster Map</a>
         </div>
         <div class="nav-right">
-            <span class="nav-icon"><i class="fas fa-search"></i></span>
-            <span class="nav-icon"><i class="fas fa-bell"></i></span>
             @auth
-                <a href="{{ route('sos.my') }}" class="btn-report">Report Emergency</a>
+                <a href="{{ route('dashboard') }}" style="font-size:13px; font-weight:600; color:var(--peach);">Dashboard</a>
+                <form method="POST" action="{{ route('logout') }}" style="display:inline; margin-left:16px;">
+                    @csrf
+                    <button type="submit" style="background:transparent; border:none; color:var(--accent); font-size:13px; font-weight:600; cursor:pointer; font-family:var(--sans);">Logout</button>
+                </form>
             @else
-                <a href="{{ route('login') }}" class="btn-report">Report Emergency</a>
+                <a href="{{ route('login') }}" style="font-size:13px; font-weight:600; color:var(--text2); transition:color .2s; font-family:var(--sans);">Sign In</a>
+                <a href="{{ route('register') }}" style="font-size:13px; font-weight:600; color:var(--peach); transition:color .2s; margin-left:16px; font-family:var(--sans);">Register</a>
             @endauth
+            <a href="{{ auth()->check() ? route('sos.my') : route('login') }}" class="btn-report" style="margin-left:20px;">Report SOS</a>
         </div>
     </nav>
 
@@ -123,11 +126,11 @@
         <p>The centralized intelligence hub for disaster response. Real-time mapping, resource allocation, and multi-agency coordination deployed securely on sovereign infrastructure.</p>
         <div class="hero-buttons">
             @auth
-                <a href="{{ route('sos.my') }}" class="btn-hero btn-hero-primary"><i class="fas fa-asterisk"></i> Report Emergency</a>
-                <a href="{{ route('dashboard') }}" class="btn-hero btn-hero-secondary"><i class="fas fa-map-marked-alt"></i> View Live Map</a>
+                <a href="{{ route('dashboard') }}" class="btn-hero btn-hero-primary"><i class="fas fa-th-large"></i> Command Center</a>
+                <a href="{{ route('sos.my') }}" class="btn-hero btn-hero-secondary"><i class="fas fa-bullhorn"></i> Report Emergency</a>
             @else
-                <a href="{{ route('register') }}" class="btn-hero btn-hero-primary"><i class="fas fa-asterisk"></i> Report Emergency</a>
-                <a href="{{ route('login') }}" class="btn-hero btn-hero-secondary"><i class="fas fa-map-marked-alt"></i> View Live Map</a>
+                <a href="{{ route('login') }}" class="btn-hero btn-hero-primary"><i class="fas fa-sign-in-alt"></i> Access Portal</a>
+                <a href="{{ route('register') }}" class="btn-hero btn-hero-secondary"><i class="fas fa-user-plus"></i> Join as Agency / Volunteer</a>
             @endauth
         </div>
 

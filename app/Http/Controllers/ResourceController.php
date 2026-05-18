@@ -25,6 +25,30 @@ class ResourceController extends Controller
         return view('resources.index', compact('resources', 'shortages'));
     }
 
+    public function agencyIndex(Request $request)
+    {
+        $agency = clone $request->user()->agency;
+        if (!$agency) {
+            return redirect()->route('agency.dashboard')->withErrors('You do not have an agency profile.');
+        }
+
+        $query = Resource::where('agency_id', $agency->id)->latest();
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $resources = $query->paginate(15);
+        $shortages = Resource::where('agency_id', $agency->id)
+            ->whereColumn('available_quantity', '<=', 'minimum_threshold')
+            ->get();
+
+        return view('agencies.resources', compact('resources', 'shortages', 'agency'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

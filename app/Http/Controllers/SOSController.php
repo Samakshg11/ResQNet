@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 
 class SOSController extends Controller
 {
+    // For admin
     public function index(Request $request)
     {
         $query = SOSRequest::with(['user', 'assignedAgency', 'disaster'])->latest();
@@ -26,9 +27,44 @@ class SOSController extends Controller
         return view('sos.index', compact('sosRequests'));
     }
 
-    public function create()
+    // For agency feed
+    public function feed(Request $request)
     {
-        return view('sos.create');
+        $query = SOSRequest::with(['user', 'assignedAgency', 'disaster'])
+            ->where('status', 'pending')
+            ->latest();
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('severity')) {
+            $query->where('severity', $request->severity);
+        }
+        if ($request->filled('type')) {
+            $query->where('type', $request->type);
+        }
+
+        $sosRequests = $query->paginate(10);
+        return view('sos.feed', compact('sosRequests'));
+    }
+
+    // For victim
+    public function my(Request $request)
+    {
+        $user = $request->user();
+        
+        $activeSos = SOSRequest::where('user_id', $user->id)
+            ->whereNotIn('status', ['resolved', 'cancelled'])
+            ->with('assignedAgency')
+            ->latest()
+            ->first();
+            
+        $history = SOSRequest::where('user_id', $user->id)
+            ->whereIn('status', ['resolved', 'cancelled'])
+            ->latest()
+            ->get();
+            
+        return view('sos.my', compact('activeSos', 'history'));
     }
 
     public function store(Request $request)
@@ -51,7 +87,23 @@ class SOSController extends Controller
         $sos = SOSRequest::create($validated);
         broadcast(new \App\Events\NewSOSRequest($sos));
 
-        return redirect()->route('sos.index')->with('success', 'SOS request sent successfully! Help is on the way.');
+        if ($request->user()->role === 'victim') {
+            return redirect()->route('sos.my')->with('success', 'SOS request sent successfully! Help is on the way.');
+        }
+        
+        return redirect()->back()->with('success', 'SOS request sent successfully!');
+    }
+    
+    public function cancel(Request $request, string $id)
+    {
+        $sos = SOSRequest::where('user_id', $request->user()->id)->findOrFail($id);
+        
+        if (!in_array($sos->status, ['resolved', 'cancelled'])) {
+            $sos->update(['status' => 'cancelled']);
+            return redirect()->back()->with('success', 'SOS cancelled successfully.');
+        }
+        
+        return redirect()->back()->withErrors(['status' => 'Cannot cancel this SOS request.']);
     }
 
     public function show(string $id)
@@ -61,6 +113,7 @@ class SOSController extends Controller
         return view('sos.show', compact('sos', 'agencies'));
     }
 
+    // For Gov Admin to assign ANY agency
     public function assign(Request $request, string $id)
     {
         $sos = SOSRequest::findOrFail($id);
@@ -83,12 +136,48 @@ class SOSController extends Controller
 
         return redirect()->back()->with('success', 'Agency assigned successfully.');
     }
+    
+    // For Agency Admin to assign themselves
+    public function assignToAgency(Request $request, string $id)
+    {
+        $sos = SOSRequest::findOrFail($id);
+        
+        if (in_array($sos->status, ['resolved', 'cancelled'], true)) {
+            return back()->withErrors(['agency_id' => 'Cannot assign to a closed SOS request.']);
+        }
+
+        $agency = $request->user()->agency;
+        if (! $agency || $agency->status !== 'verified') {
+            return back()->withErrors(['agency_id' => 'You must be a verified agency to claim an SOS.']);
+        }
+        
+        if ($sos->assigned_agency_id && $sos->assigned_agency_id !== $agency->id) {
+            return back()->withErrors(['agency_id' => 'This SOS is already assigned to another agency.']);
+        }
+
+        $sos->update([
+            'assigned_agency_id' => $agency->id,
+            'status' => 'assigned',
+            'assigned_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'SOS assigned to your agency successfully.');
+    }
 
     public function updateStatus(Request $request, string $id)
     {
         $sos = SOSRequest::findOrFail($id);
         $request->validate(['status' => 'required|in:pending,assigned,dispatched,en_route,resolved,cancelled']);
         $nextStatus = $request->status;
+
+        // Security check for agency admin / volunteer
+        if (in_array($request->user()->role, ['agency_admin', 'volunteer'])) {
+            $userAgencyId = clone $request->user();
+            $userAgencyId = $userAgencyId->role === 'agency_admin' ? $userAgencyId->agency->id : $userAgencyId->volunteer->agency_id;
+            if ($sos->assigned_agency_id !== $userAgencyId) {
+                abort(403);
+            }
+        }
 
         if (in_array($nextStatus, ['assigned', 'dispatched', 'en_route'], true) && ! $sos->assigned_agency_id) {
             return back()->withErrors(['status' => 'Assign an agency before moving to operational statuses.']);

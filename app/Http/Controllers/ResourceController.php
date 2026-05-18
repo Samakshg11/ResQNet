@@ -73,6 +73,10 @@ class ResourceController extends Controller
 
         Resource::create($validated);
 
+        if (auth()->user()->role === 'agency_admin') {
+            return redirect()->route('agency.resources.index')->with('success', 'Resource added.');
+        }
+
         return redirect()->route('resources.index')->with('success', 'Resource added.');
     }
 

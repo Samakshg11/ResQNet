@@ -31,6 +31,17 @@ class AgencyController extends Controller
         return view('agencies.show', compact('agency'));
     }
 
+    public function my(Request $request)
+    {
+        $agency = clone $request->user()->agency;
+        if (!$agency) {
+            return redirect()->route('dashboard')->withErrors('No agency profile found.');
+        }
+
+        $agency->load(['user', 'resources', 'volunteers.user', 'reports']);
+        return view('agencies.show', compact('agency'));
+    }
+
     public function create()
     {
         return view('agencies.create');

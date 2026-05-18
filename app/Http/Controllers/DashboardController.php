@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
+    // For Gov Admin
     public function index(Request $request)
     {
         $user = $request->user();
@@ -44,5 +45,50 @@ class DashboardController extends Controller
             ->get();
 
         return view('dashboard.index', compact('stats', 'recentSOS', 'activeDisasters', 'recentAlerts', 'user'));
+    }
+    
+    // For Volunteer
+    public function volunteer(Request $request)
+    {
+        $user = $request->user();
+        $volunteer = $user->volunteer;
+        
+        $activeMissions = collect();
+        if ($volunteer && $volunteer->agency_id) {
+            $activeMissions = SOSRequest::where('assigned_agency_id', $volunteer->agency_id)
+                ->whereNotIn('status', ['resolved', 'cancelled'])
+                ->with('disaster')
+                ->latest()
+                ->get();
+        }
+        
+        $stats = [
+            'total_missions' => 12,
+            'hours_logged' => 45,
+        ];
+        
+        return view('dashboard.volunteer', compact('user', 'volunteer', 'activeMissions', 'stats'));
+    }
+    
+    // For Agency Admin
+    public function agency(Request $request)
+    {
+        $user = $request->user();
+        $agency = $user->agency;
+        
+        $stats = [
+            'active_missions' => SOSRequest::where('assigned_agency_id', $agency->id)
+                ->whereNotIn('status', ['resolved', 'cancelled'])->count(),
+            'resolved_missions' => SOSRequest::where('assigned_agency_id', $agency->id)
+                ->where('status', 'resolved')->count(),
+            'total_volunteers' => Volunteer::where('agency_id', $agency->id)->count(),
+        ];
+        
+        $activeSos = SOSRequest::where('assigned_agency_id', $agency->id)
+            ->whereNotIn('status', ['resolved', 'cancelled'])
+            ->latest()
+            ->get();
+            
+        return view('dashboard.agency', compact('user', 'agency', 'stats', 'activeSos'));
     }
 }

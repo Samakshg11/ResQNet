@@ -94,6 +94,7 @@ Route::middleware(['auth', 'role:gov_admin,super_admin'])->group(function () {
     Route::get('/sos', [SOSController::class, 'index'])->name('sos.index');
     Route::get('/sos/{id}', [SOSController::class, 'show'])->name('sos.show');
     Route::post('/sos/{id}/assign', [SOSController::class, 'assign'])->name('sos.assign');
+    Route::patch('/sos/{id}/status', [SOSController::class, 'updateStatus'])->name('sos.updateStatus');
     
     Route::get('/resources', [ResourceController::class, 'index'])->name('resources.index');
     Route::get('/volunteers', [VolunteerController::class, 'index'])->name('volunteers.index');

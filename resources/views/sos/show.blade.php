@@ -29,7 +29,10 @@
         @endif
         <div class="card" style="margin-bottom:20px">
             <span class="section-title">Update Status</span>
-            <form method="POST" action="{{ route('sos.updateStatus', $sos->id) }}">@csrf @method('PATCH')
+            @php
+                $updateRoute = auth()->user()->role === 'agency_admin' ? 'agency.sos.updateStatus' : 'sos.updateStatus';
+            @endphp
+            <form method="POST" action="{{ route($updateRoute, $sos->id) }}">@csrf @method('PATCH')
                 <div class="form-group"><select name="status" class="form-control" required>@foreach(['pending','assigned','dispatched','en_route','resolved','cancelled'] as $s)<option value="{{ $s }}" {{ $sos->status===$s?'selected':'' }}>{{ ucfirst(str_replace('_',' ',$s)) }}</option>@endforeach</select></div>
                 <button type="submit" class="btn btn-ghost btn-sm"><i class="fas fa-save"></i> Update</button>
             </form>

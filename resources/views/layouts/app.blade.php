@@ -493,5 +493,37 @@
         @yield('content')
     @endauth
     @yield('scripts')
+    @auth
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            function updatePendingCount() {
+                fetch('/api/sos/pending-count', {
+                    headers: { 'Accept': 'application/json' }
+                })
+                .then(r => r.json())
+                .then(data => {
+                    const countBadge = document.querySelector('.sidebar-nav a[href*="sos"] .count');
+                    if (data.count > 0) {
+                        if (countBadge) {
+                            countBadge.textContent = data.count;
+                        } else {
+                            const sosLink = document.querySelector('.sidebar-nav a[href*="sos"]');
+                            if (sosLink) {
+                                const badge = document.createElement('span');
+                                badge.className = 'count';
+                                badge.textContent = data.count;
+                                sosLink.appendChild(badge);
+                            }
+                        }
+                    } else if (countBadge) {
+                        countBadge.remove();
+                    }
+                })
+                .catch(console.error);
+            }
+            setInterval(updatePendingCount, 30000);
+        });
+    </script>
+    @endauth
 </body>
 </html>

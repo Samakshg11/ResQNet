@@ -9,6 +9,20 @@
             <div><span class="badge badge-{{ $agency->status }}">{{ ucfirst($agency->status) }}</span></div>
         </div>
         @if($agency->description)<p style="font-size:14px;color:var(--text-secondary);line-height:1.7;margin-bottom:20px">{{ $agency->description }}</p>@endif
+        
+        @if(auth()->user()->role === 'gov_admin' && $agency->status === 'pending')
+            <div style="display:flex; gap: 10px; margin-bottom: 24px;">
+                <form action="{{ route('agencies.verify', $agency->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;">Verify Agency</button>
+                </form>
+                <form action="{{ route('agencies.reject', $agency->id) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn" style="padding: 8px 16px; font-size: 13px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2);">Reject</button>
+                </form>
+            </div>
+        @endif
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
             <div><span class="form-label">Registration</span><br><span style="font-size:13px">{{ $agency->registration_number }}</span></div>
             <div><span class="form-label">Contact</span><br><span style="font-size:13px">{{ $agency->contact_phone }}</span></div>

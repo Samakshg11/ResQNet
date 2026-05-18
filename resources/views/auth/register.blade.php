@@ -411,10 +411,23 @@
                 document.getElementById('form-agency').classList.add('active');
             }
         }
-        
-        @if(old('intent') === 'agency')
-            switchTab('agency');
-        @endif
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const tabParam = urlParams.get('tab') || urlParams.get('intent');
+            
+            if (tabParam === 'agency' || tabParam === 'agency_admin') {
+                switchTab('agency');
+            } else if (tabParam === 'victim') {
+                switchTab('victim');
+            } else {
+                @if(old('intent') === 'agency')
+                    switchTab('agency');
+                @else
+                    switchTab('victim');
+                @endif
+            }
+        });
     </script>
 </body>
 </html>

@@ -279,8 +279,9 @@
                 </button>
             </form>
             
-            <div class="auth-footer">
-                New to the network? <a href="{{ route('register') }}">Join Operation</a>
+            <div class="auth-footer" style="display:flex; flex-direction:column; gap:8px;">
+                <div>New to the network? <a href="{{ route('register') }}">Join as Citizen</a></div>
+                <div style="font-size:13px; opacity:0.8; margin-top:4px;">Represent an organization? <a href="{{ route('register', ['tab' => 'agency']) }}">Register Your Agency</a></div>
             </div>
         </div>
     </div>

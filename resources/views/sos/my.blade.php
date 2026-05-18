@@ -109,19 +109,37 @@
             display:flex;align-items:center;justify-content:center;flex-direction:column;
             box-shadow:0 0 60px rgba(232,115,90,.2),0 0 120px rgba(232,115,90,.08);
             transition:all .3s;font-family:var(--sans);
+            animation: sosGlow 1.6s infinite ease-in-out;
         }
         .sos-button:hover{transform:scale(1.03);box-shadow:0 0 80px rgba(232,115,90,.35),0 0 160px rgba(232,115,90,.12)}
         .sos-button::before{
-            content:'';position:absolute;inset:-20px;border-radius:50%;
-            border:1px solid rgba(232,115,90,.15);
-            animation:sosPulse 3s ease-in-out infinite;
+            content:'';position:absolute;inset:0;border-radius:50%;
+            border:2px solid rgba(232,115,90,.4);
+            pointer-events:none;
+            animation:sosPulse 2.4s cubic-bezier(0.215, 0.610, 0.355, 1) infinite;
         }
         .sos-button::after{
-            content:'';position:absolute;inset:-40px;border-radius:50%;
-            border:1px solid rgba(232,115,90,.08);
-            animation:sosPulse 3s ease-in-out infinite .5s;
+            content:'';position:absolute;inset:0;border-radius:50%;
+            border:2px solid rgba(232,115,90,.2);
+            pointer-events:none;
+            animation:sosPulse 2.4s cubic-bezier(0.215, 0.610, 0.355, 1) infinite 0.8s;
         }
-        @keyframes sosPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.05);opacity:.5}}
+        @keyframes sosGlow {
+            0%, 100% {
+                transform: scale(1);
+                box-shadow: 0 0 50px rgba(232,115,90,.35), 0 0 100px rgba(232,115,90,.15);
+                filter: brightness(1);
+            }
+            50% {
+                transform: scale(1.04);
+                box-shadow: 0 0 80px rgba(232,115,90,.7), 0 0 160px rgba(232,115,90,.35);
+                filter: brightness(1.2);
+            }
+        }
+        @keyframes sosPulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.4); opacity: 0; }
+        }
         .sos-button .icon{font-size:28px;color:rgba(10,10,10,.6);margin-bottom:4px}
         .sos-button .label{font-size:24px;font-weight:800;color:#0a0a0a;letter-spacing:2px}
         
@@ -538,8 +556,8 @@
                 document.getElementById('type-input').value = val;
             }
             
-            // Default center Delhi
-            let map = L.map('sos-map', { zoomControl: false }).setView([28.6139, 77.2090], 13);
+            // Default center Delhi - Zoomed in closer
+            let map = L.map('sos-map', { zoomControl: false }).setView([28.6139, 77.2090], 16);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; OpenStreetMap contributors &copy; CARTO'
             }).addTo(map);
@@ -570,7 +588,7 @@
                     let lat = p.coords.latitude;
                     let lng = p.coords.longitude;
                     updateLocation(lat, lng);
-                    map.setView([lat, lng], 15);
+                    map.setView([lat, lng], 17); // Zoomed in closer
                     marker.setLatLng([lat, lng]);
                 }, function(error) {
                     console.warn('Geolocation failed:', error.message);
@@ -584,7 +602,7 @@
                         .then(data => {
                             if(data.latitude && data.longitude) {
                                 updateLocation(data.latitude, data.longitude);
-                                map.setView([data.latitude, data.longitude], 14);
+                                map.setView([data.latitude, data.longitude], 16); // Zoomed in closer
                                 marker.setLatLng([data.latitude, data.longitude]);
                                 if(badge) {
                                     badge.textContent = 'Approx. Location (Drag Pin)';

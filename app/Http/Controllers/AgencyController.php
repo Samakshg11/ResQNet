@@ -93,4 +93,11 @@ class AgencyController extends Controller
         $agency->update(['status' => 'suspended']);
         return redirect()->back()->with('success', 'Agency suspended.');
     }
+
+    public function reject(string $id)
+    {
+        $agency = Agency::findOrFail($id);
+        $agency->update(['status' => 'rejected']);
+        return redirect()->back()->with('success', 'Agency registration rejected.');
+    }
 }

@@ -346,8 +346,13 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="brand">ResQNet</div>
-            <h2>ResQNet<br>Dashboard</h2>
-            <div class="subtitle">Regional Command Unit</div>
+            @if(auth()->user()->role === 'super_admin')
+                <h2 style="color:var(--accent); font-weight:800; font-size:18px; letter-spacing: 0.5px;">Supreme Control<br>H.Q.</h2>
+                <div class="subtitle" style="color:var(--peach); font-weight:700; font-size:10px; letter-spacing:0.8px; text-transform:uppercase; margin-top: 4px;">Director General (NDMA)</div>
+            @else
+                <h2>ResQNet<br>Dashboard</h2>
+                <div class="subtitle">Regional Command Unit</div>
+            @endif
         </div>
         <div class="sidebar-dispatch">
             @if(auth()->user()->role === 'gov_admin' || auth()->user()->role === 'super_admin')
@@ -432,10 +437,14 @@
         </div>
         <div class="user-block" style="border-top: 1px solid var(--border); padding-top: 16px; display: flex; align-items: center; justify-content: space-between;">
             <a href="{{ route('profile.edit') }}" style="text-decoration: none; display: flex; align-items: center; gap: 10px;">
-                <div class="user-avatar">{{ substr(auth()->user()->name, 0, 1) }}</div>
+                <div class="user-avatar" style="{{ auth()->user()->role === 'super_admin' ? 'border: 1px solid var(--accent); color: var(--accent);' : '' }}">{{ substr(auth()->user()->name, 0, 1) }}</div>
                 <div class="user-info">
                     <div class="name">{{ Str::limit(auth()->user()->name, 12) }}</div>
-                    <div class="role">ID: RQN-{{ str_pad(auth()->user()->id, 3, '0', STR_PAD_LEFT) }}</div>
+                    @if(auth()->user()->role === 'super_admin')
+                        <div class="role" style="color:var(--accent); font-weight:700; font-size:9px; letter-spacing: 0.5px;">SUPER ADMIN</div>
+                    @else
+                        <div class="role">ID: RQN-{{ str_pad(auth()->user()->id, 3, '0', STR_PAD_LEFT) }}</div>
+                    @endif
                 </div>
             </a>
             <form method="POST" action="{{ route('logout') }}">
@@ -455,8 +464,14 @@
         </div>
         <div class="topnav-right">
             <div class="topnav-icon" title="Notifications"><i class="fas fa-bell"></i></div>
-            <div style="font-size: 11px; font-weight: 700; padding: 6px 12px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px;">
-                {{ str_replace('_', ' ', auth()->user()->role) }}
+            <div style="font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;
+                @if(auth()->user()->role === 'super_admin')
+                    background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent);
+                @else
+                    background: var(--bg-card); border: 1px solid var(--border); color: var(--text-secondary);
+                @endif
+            ">
+                {{ auth()->user()->role === 'super_admin' ? 'Supreme Director (Super Admin)' : (auth()->user()->role === 'gov_admin' ? 'Government Admin' : str_replace('_', ' ', auth()->user()->role)) }}
             </div>
         </div>
     </nav>

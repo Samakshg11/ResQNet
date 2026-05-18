@@ -16,6 +16,14 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
+        
+        if ($user->role === 'agency_admin') {
+            return redirect()->route('agency.dashboard');
+        } elseif ($user->role === 'volunteer') {
+            return redirect()->route('volunteer.dashboard');
+        } elseif ($user->role === 'victim') {
+            return redirect()->route('sos.my');
+        }
 
         $stats = [
             'active_disasters' => Disaster::where('status', 'active')->count(),

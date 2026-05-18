@@ -31,15 +31,15 @@ class AuthController extends Controller
 
             switch ($user->role) {
                 case 'victim':
-                    return redirect()->intended('/sos/my');
+                    return redirect()->route('sos.my');
                 case 'volunteer':
-                    return redirect()->intended('/volunteer/dashboard');
+                    return redirect()->route('volunteer.dashboard');
                 case 'agency_admin':
-                    return redirect()->intended('/agency/dashboard');
+                    return redirect()->route('agency.dashboard');
                 case 'gov_admin':
                 case 'super_admin':
                 default:
-                    return redirect()->intended('/dashboard');
+                    return redirect()->route('dashboard');
             }
         }
 

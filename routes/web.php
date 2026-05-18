@@ -80,6 +80,7 @@ Route::middleware(['auth', 'role:gov_admin,super_admin'])->group(function () {
     
     Route::get('/agencies', [AgencyController::class, 'index'])->name('agencies.index');
     Route::get('/agencies/create', [AgencyController::class, 'create'])->name('agencies.create');
+    Route::post('/agencies', [AgencyController::class, 'store'])->name('agencies.store');
     Route::get('/agencies/{id}', [AgencyController::class, 'show'])->name('agencies.show');
     Route::post('/agencies/{id}/verify', [AgencyController::class, 'verify'])->name('agencies.verify');
     Route::post('/agencies/{id}/suspend', [AgencyController::class, 'suspend'])->name('agencies.suspend');

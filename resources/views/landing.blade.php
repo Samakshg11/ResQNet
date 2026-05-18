@@ -130,7 +130,7 @@
                 <a href="{{ route('sos.my') }}" class="btn-hero btn-hero-secondary"><i class="fas fa-bullhorn"></i> Report Emergency</a>
             @else
                 <a href="{{ route('login') }}" class="btn-hero btn-hero-primary"><i class="fas fa-sign-in-alt"></i> Access Portal</a>
-                <a href="{{ route('register') }}" class="btn-hero btn-hero-secondary"><i class="fas fa-user-plus"></i> Join as Agency / Volunteer</a>
+                <a href="{{ route('register', ['tab' => 'agency']) }}" class="btn-hero btn-hero-secondary"><i class="fas fa-user-plus"></i> Register Your Agency</a>
             @endauth
         </div>
 

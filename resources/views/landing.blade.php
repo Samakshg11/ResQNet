@@ -1,234 +1,442 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ResQNet — Precision Coordination for Critical Operations</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>ResQNet | Sovereign Shield Command</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
     <style>
-        :root{--bg:#0a0a0a;--card:#161616;--border:#1e1e1e;--text:#e8e0d8;--text2:#8a7f75;--muted:#5a534c;--accent:#e8735a;--peach:#f0c4a8;--serif:'DM Serif Display',serif;--sans:'Inter',sans-serif}
-        *{margin:0;padding:0;box-sizing:border-box}body{font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}::selection{background:var(--accent);color:#fff}
-
-        /* Navbar */
-        .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 48px;height:60px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,.9);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
-        .nav-brand{font-family:var(--serif);font-size:22px;color:var(--peach);letter-spacing:.5px}
-        .nav-center{display:flex;gap:32px}
-        .nav-center a{font-size:13px;font-weight:500;color:var(--text2);transition:color .2s}
-        .nav-center a:hover{color:var(--text)}
-        .nav-right{display:flex;align-items:center;gap:20px}
-        .nav-icon{color:var(--text2);font-size:16px;cursor:pointer;transition:color .2s}
-        .nav-icon:hover{color:var(--text)}
-        .btn-report{padding:9px 20px;border:1px solid var(--accent);border-radius:6px;color:var(--accent);font-size:12px;font-weight:600;font-family:var(--sans);background:transparent;cursor:pointer;transition:all .2s;letter-spacing:.3px}
-        .btn-report:hover{background:var(--accent);color:#0a0a0a}
-
-        /* Hero */
-        .hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:140px 48px 80px;max-width:1200px;position:relative}
-        .hero-badge{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;background:rgba(232,115,90,.08);border:1px solid rgba(232,115,90,.15);border-radius:20px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:32px;width:fit-content}
-        .hero-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 1.5s infinite}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-        .hero h1{font-family:var(--serif);font-size:clamp(40px,5.5vw,64px);font-weight:400;line-height:1.15;color:var(--text);margin-bottom:28px;max-width:650px}
-        .hero h1 .em{color:var(--peach)}
-        .hero p{font-size:16px;color:var(--text2);line-height:1.8;max-width:560px;margin-bottom:44px}
-        .hero-buttons{display:flex;gap:12px;flex-wrap:wrap}
-        .btn-hero{padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;font-family:var(--sans);cursor:pointer;display:inline-flex;align-items:center;gap:10px;transition:all .3s;border:none}
-        .btn-hero-primary{background:var(--accent);color:#0a0a0a}
-        .btn-hero-primary:hover{box-shadow:0 0 30px rgba(232,115,90,.3);opacity:.9}
-        .btn-hero-secondary{background:transparent;color:var(--text);border:1px solid var(--border)}
-        .btn-hero-secondary:hover{border-color:var(--text2)}
-
-        /* Stats Row */
-        .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:900px;margin-top:80px}
-        .stat-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px}
-        .stat-box-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
-        .stat-box-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted)}
-        .stat-box-label .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--accent);margin-right:6px;animation:pulse 1.5s infinite}
-        .stat-box-icon{width:28px;height:28px;border-radius:6px;background:var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px}
-        .stat-box-value{font-size:40px;font-weight:300;color:var(--text);letter-spacing:-1px;margin-bottom:6px}
-        .stat-box-sub{font-size:12px;color:var(--text2)}
-        .stat-box-bar{height:3px;background:var(--border);border-radius:2px;margin-top:16px;overflow:hidden}
-        .stat-box-bar-fill{height:100%;background:var(--accent);border-radius:2px}
-        .stat-box-tags{display:flex;gap:6px;margin-top:10px}
-        .stat-box-tags span{font-size:10px;color:var(--text2);background:var(--border);padding:3px 10px;border-radius:4px;font-weight:500}
-
-        /* Footer */
-        .footer-landing{padding:48px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;margin-top:120px}
-        .footer-brand{font-family:var(--serif);font-size:20px;color:var(--text);margin-bottom:10px}
-        .footer-copy{font-size:12px;color:var(--muted);line-height:1.6;max-width:260px}
-        .footer-links{display:flex;gap:28px}
-        .footer-links a{font-size:12px;color:var(--muted);transition:color .2s}
-        .footer-links a:hover{color:var(--text)}
-
-        @media(max-width:768px){
-            .hero{padding:120px 24px 60px}
-            .hero h1{font-size:36px}
-            .stats-row{grid-template-columns:1fr}
-            .nav-center{display:none}
-            .footer-landing{flex-direction:column;gap:24px}
-            .features-section{padding:80px 24px}
-            .map-section{padding:60px 24px}
-            .section-title{font-size:32px}
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.7); }
+            50% { box-shadow: 0 0 30px 10px rgba(229, 62, 62, 0.4); }
+        }
+        @keyframes drift {
+            from { transform: translate(0, 0); opacity: 0; }
+            50% { opacity: 0.5; }
+            to { transform: translate(100px, -100px); opacity: 0; }
+        }
+        @keyframes data-flow {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+        @keyframes ticker {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes scan-vertical {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
         }
 
-        /* Features Section */
-        .features-section { padding: 120px 48px; max-width: 1200px; margin: 0 auto; border-top: 1px solid var(--border); position: relative; }
-        .section-title { font-family: var(--serif); font-size: 48px; color: var(--text); margin-bottom: 20px; text-align: center; }
-        .section-subtitle { font-size: 16px; color: var(--text2); text-align: center; max-width: 600px; margin: 0 auto 60px; line-height: 1.6; }
-        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 32px; }
-        .feature-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 40px; transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s; }
-        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.5); border-color: var(--accent); }
-        .feature-icon { width: 48px; height: 48px; background: rgba(232,115,90,.1); color: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 24px; }
-        .feature-title { font-size: 20px; font-weight: 600; margin-bottom: 12px; color: var(--text); }
-        .feature-desc { font-size: 14px; color: var(--text2); line-height: 1.7; }
-        
-        /* Interactive Map Section Placeholder */
-        .map-section { padding: 100px 48px; background: rgba(15,15,15,0.5); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-        .map-container-wrapper { max-width: 1200px; margin: 0 auto; text-align: center; }
-        .map-visual { width: 100%; height: 450px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 40px; position: relative; overflow: hidden; }
-        .map-visual::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 0%, var(--card) 100%); z-index: 1; pointer-events: none; }
-        .map-visual i { font-size: 64px; color: var(--muted); margin-bottom: 20px; z-index: 2; }
-        .map-visual p { color: var(--text2); font-size: 16px; z-index: 2; font-weight: 500; }
-        
-        /* Grid Background for empty spaces */
-        .grid-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px; z-index: -1; pointer-events: none; }
-        
-        .footer-landing { margin-top: 0; }
-        
+        .data-grid-bg {
+            background-color: #0c0f0f;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .tactical-glass {
+            background: rgba(12, 15, 15, 0.6);
+            backdrop-filter: blur(40px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .signal-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00FFFF;
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: drift 15s infinite linear;
+        }
+
+        .scan-bar {
+            height: 2px;
+            width: 100%;
+            background: linear-gradient(90deg, transparent, #00FFFF, transparent);
+            position: absolute;
+            animation: scan-vertical 4s infinite linear;
+        }
+
+        .reveal-stagger > * {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-stagger.active > * {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-stagger.active > *:nth-child(2) { transition-delay: 0.1s; }
+        .reveal-stagger.active > *:nth-child(3) { transition-delay: 0.2s; }
+
+        .map-mesh {
+            mask-image: radial-gradient(circle at center, black 40%, transparent 80%);
+            perspective: 1000px;
+        }
+
+        .nav-shrink {
+            transition: all 0.4s ease;
+        }
+        .nav-shrink.scrolled {
+            height: 64px;
+            background: rgba(12, 15, 15, 0.95);
+        }
     </style>
 </head>
-<body>
-    <div class="grid-bg"></div>
-    <nav class="navbar">
-        <a href="/" class="nav-brand">ResQNet</a>
-        <div class="nav-center">
-            <a href="{{ route('agencies.index') }}">Agency Directory</a>
-            <a href="{{ route('disasters.index') }}">Disaster Feed</a>
-            <a href="{{ route('analytics.index') }}">Disaster Map</a>
+<body class="bg-obsidian text-on-background font-body overflow-x-hidden selection:bg-alert-cyan/30">
+    <!-- Nav -->
+    <nav class="fixed top-0 left-0 right-0 z-[100] h-24 flex items-center justify-between px-10 tactical-glass border-b border-white/5 nav-shrink" id="mainNav">
+        <div class="flex items-center gap-8">
+            <a href="/" class="flex items-center gap-3 text-decoration-none">
+                <span class="font-headline text-2xl font-extrabold tracking-tighter text-white">RESQNET</span>
+            </a>
+            <div class="hidden lg:flex gap-8 text-[11px] font-bold uppercase tracking-widest text-white/50">
+                <a class="hover:text-alert-cyan transition-colors" href="{{ route('agencies.index') }}">Strategic Assets</a>
+                <a class="hover:text-alert-cyan transition-colors" href="{{ route('disasters.index') }}">Command Centers</a>
+                <a class="hover:text-alert-cyan transition-colors" href="{{ route('analytics.index') }}">Satellite Uplink</a>
+            </div>
         </div>
-        <div class="nav-right">
+        <div class="flex items-center gap-6">
+            <div class="hidden md:flex flex-col items-end mr-4">
+                <span class="text-[9px] font-bold text-alert-cyan uppercase tracking-widest">System Status</span>
+                <span class="text-[10px] text-white/40">Sovereign Node: Active</span>
+            </div>
             @auth
-                <a href="{{ route('dashboard') }}" style="font-size:13px; font-weight:600; color:var(--peach);">Dashboard</a>
-                <form method="POST" action="{{ route('logout') }}" style="display:inline; margin-left:16px;">
-                    @csrf
-                    <button type="submit" style="background:transparent; border:none; color:var(--accent); font-size:13px; font-weight:600; cursor:pointer; font-family:var(--sans);">Logout</button>
-                </form>
+                <a href="{{ route('dashboard') }}" class="bg-emergency-red/10 border border-emergency-red/40 text-emergency-red px-6 py-2 rounded-full text-xs font-bold hover:bg-emergency-red hover:text-white transition-all text-decoration-none text-center">
+                    CONSOLE
+                </a>
             @else
-                <a href="{{ route('login') }}" style="font-size:13px; font-weight:600; color:var(--text2); transition:color .2s; font-family:var(--sans);">Sign In</a>
-                <a href="{{ route('register') }}" style="font-size:13px; font-weight:600; color:var(--peach); transition:color .2s; margin-left:16px; font-family:var(--sans);">Register</a>
+                <a href="{{ route('login') }}" class="bg-emergency-red/10 border border-emergency-red/40 text-emergency-red px-6 py-2 rounded-full text-xs font-bold hover:bg-emergency-red hover:text-white transition-all text-decoration-none text-center">
+                    ENCRYPTED LOGIN
+                </a>
             @endauth
-            <a href="{{ auth()->check() ? route('sos.my') : route('login') }}" class="btn-report" style="margin-left:20px;">Report SOS</a>
         </div>
     </nav>
 
-    <section class="hero">
-        <div class="hero-badge"><span class="dot"></span> Active Coordination Network</div>
-        <h1>Precision Coordination for <span class="em">Critical Operations</span>.</h1>
-        <p>The centralized intelligence hub for disaster response. Real-time mapping, resource allocation, and multi-agency coordination deployed securely on sovereign infrastructure.</p>
-        <div class="hero-buttons">
-            @auth
-                <a href="{{ route('dashboard') }}" class="btn-hero btn-hero-primary"><i class="fas fa-th-large"></i> Command Center</a>
-                <a href="{{ route('sos.my') }}" class="btn-hero btn-hero-secondary"><i class="fas fa-bullhorn"></i> Report Emergency</a>
-            @else
-                <a href="{{ route('login') }}" class="btn-hero btn-hero-primary"><i class="fas fa-sign-in-alt"></i> Access Portal</a>
-                <a href="{{ route('register', ['tab' => 'agency']) }}" class="btn-hero btn-hero-secondary"><i class="fas fa-user-plus"></i> Register Your Agency</a>
-            @endauth
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-stretch pt-24 overflow-hidden data-grid-bg">
+        <!-- Floating Nodes Background -->
+        <div class="absolute inset-0 pointer-events-none opacity-40">
+            <div class="signal-node" style="top: 20%; left: 10%; animation-delay: 0s;"></div>
+            <div class="signal-node" style="top: 50%; left: 30%; animation-delay: 2s;"></div>
+            <div class="signal-node" style="top: 80%; left: 15%; animation-delay: 4s;"></div>
+            <div class="signal-node" style="top: 40%; left: 60%; animation-delay: 1s;"></div>
+            <div class="signal-node" style="top: 10%; left: 80%; animation-delay: 5s;"></div>
         </div>
-
-        <div class="stats-row">
-            <div class="stat-box">
-                <div class="stat-box-header">
-                    <span class="stat-box-label">Lives Saved</span>
-                    <div class="stat-box-icon"><i class="fas fa-shield-halved"></i></div>
-                </div>
-                <div class="stat-box-value">{{ number_format(\App\Models\Disaster::sum('rescued_count')) }}</div>
-                <div class="stat-box-bar"><div class="stat-box-bar-fill" style="width:72%"></div></div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-box-header">
-                    <span class="stat-box-label"><span class="dot"></span>Active Missions</span>
-                    <div class="stat-box-icon"><i class="fas fa-triangle-exclamation"></i></div>
-                </div>
-                <div class="stat-box-value">{{ \App\Models\SOSRequest::whereNotIn('status',['resolved','cancelled'])->count() }}</div>
-                <div class="stat-box-sub">Across {{ \App\Models\Agency::where('status','verified')->count() }} regional sectors</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-box-header">
-                    <span class="stat-box-label">Active Resources</span>
-                    <div class="stat-box-icon"><i class="fas fa-clipboard-list"></i></div>
-                </div>
-                <div class="stat-box-value">{{ number_format(\App\Models\Resource::sum('available_quantity')) }}</div>
-                <div class="stat-box-tags">
-                    <span>Vehicles</span><span>Personnel</span><span>Medical</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="features-section">
-        <h2 class="section-title">Comprehensive Response Tools</h2>
-        <p class="section-subtitle">A unified platform integrating real-time intelligence, resource tracking, and inter-agency communication to streamline emergency management.</p>
         
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-satellite-dish"></i></div>
-                <h3 class="feature-title">Real-Time SOS Tracking</h3>
-                <p class="feature-desc">Instantly locate and prioritize emergency requests with precision GPS tracking. Allocate resources efficiently to areas with the highest critical needs.</p>
+        <!-- Left: Command Panel -->
+        <div class="w-full lg:w-1/2 flex flex-col justify-center px-12 lg:px-24 z-10 relative reveal-stagger active">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/5 border border-white/10 rounded-full mb-6 w-fit">
+                <span class="w-1.5 h-1.5 rounded-full bg-alert-cyan animate-pulse"></span>
+                <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-alert-cyan">Secure Terminal Link 0.94</span>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-network-wired"></i></div>
-                <h3 class="feature-title">Inter-Agency Network</h3>
-                <p class="feature-desc">Seamlessly communicate and collaborate with verified NGOs, government bodies, and medical units on a unified, secure dashboard.</p>
+            <h1 class="font-headline text-5xl lg:text-7xl font-extrabold text-white leading-tight mb-8">
+                ResQNet:<br/>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/40">The Sovereign Shield.</span>
+            </h1>
+            <p class="text-white/60 text-lg max-w-lg mb-12 leading-relaxed font-light">
+                Nation-scale crisis management infrastructure. Real-time neural coordination for the next generation of public safety.
+            </p>
+            <div class="flex flex-wrap gap-6">
+                <a href="{{ route('sos.my') }}" class="group relative px-10 py-5 bg-emergency-red rounded-xl font-bold text-white transition-all hover:scale-105 active:scale-95 overflow-hidden shadow-[0_0_50px_rgba(229,62,62,0.4)] text-decoration-none text-center flex items-center justify-center" style="animation: pulse-red 2s infinite">
+                    <span class="relative z-10 flex items-center gap-3">
+                        <span class="material-symbols-outlined">sos</span>
+                        REPORT EMERGENCY
+                    </span>
+                </a>
+                <a href="{{ route('analytics.index') }}" class="px-10 py-5 tactical-glass border-white/20 rounded-xl font-bold text-white hover:bg-white/10 transition-all border text-decoration-none text-center flex items-center justify-center">
+                    MONITOR NETWORK
+                </a>
             </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
-                <h3 class="feature-title">Advanced Analytics</h3>
-                <p class="feature-desc">Monitor disaster metrics, resource deployment statuses, and post-mission impact through interactive charts and aggregated data reports.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-truck-medical"></i></div>
-                <h3 class="feature-title">Resource Management</h3>
-                <p class="feature-desc">Track available vehicles, personnel, and medical supplies in real-time to ensure rapid deployment without logistical bottlenecks.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-tower-broadcast"></i></div>
-                <h3 class="feature-title">Disaster Alerts</h3>
-                <p class="feature-desc">Automated, region-specific alert broadcasts notify local authorities and registered volunteers immediately upon disaster verification.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon"><i class="fas fa-shield-virus"></i></div>
-                <h3 class="feature-title">Secure & Sovereign</h3>
-                <p class="feature-desc">Built with enterprise-grade encryption and hosted on resilient infrastructure ensuring operational continuity during infrastructure failures.</p>
+        </div>
+        
+        <!-- Right: Map Interface -->
+        <div class="hidden lg:flex w-1/2 relative items-center justify-center p-12">
+            <div class="relative w-full max-w-2xl aspect-[4/5] tactical-glass rounded-[40px] p-1 border-white/10 shadow-2xl overflow-hidden group">
+                <div class="scan-bar"></div>
+                <div class="absolute inset-0 map-mesh opacity-80 transition-transform duration-700 group-hover:scale-110">
+                    <!-- 3D Map Visual Overlay -->
+                    <div class="w-full h-full bg-gradient-to-b from-transparent via-alert-cyan/10 to-transparent flex items-center justify-center">
+                        <div class="relative w-full flex items-center justify-center">
+                            <img alt="India Map Overlay" class="w-[80%] mx-auto opacity-20 grayscale invert" src="https://lh3.googleusercontent.com/aida/ADBb0ug-6AqEgtVjvXHSOQJdkYcIXJy_CftiduH7r8vk82MKiKmDzrGIeCmt8jUWPkbIhJpf4PR0iSVI6lowKIO5hnujoX_UAEA6RBmJhhjS0CAs5_GGKIBG4_Tg7BKASh0k7PyW56BJifdFgBMaNlB8hNrNXTkrIrigURRoMRbT4FX-s1oooklOU2nO-Mk16TRrRLRvkY0G8dds0awMAId5z4kxjhXWvhH3Cb0_zOXOavYUifmT7vExzbgUT8A"/>
+                            <div class="absolute top-1/4 left-1/2 w-4 h-4 bg-alert-cyan rounded-full animate-ping"></div>
+                            <div class="absolute bottom-1/3 right-1/4 w-3 h-3 bg-emergency-red rounded-full animate-ping" style="animation-delay: 1s"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Tactical Data Overlay -->
+                <div class="absolute top-10 left-10 space-y-4">
+                    <div class="tactical-glass p-4 rounded-xl border-white/5">
+                        <div class="text-[9px] font-bold text-alert-cyan uppercase mb-1">Live Feed</div>
+                        <div class="text-xl font-mono text-white">28.6N 77.2E</div>
+                    </div>
+                    <div class="tactical-glass p-4 rounded-xl border-white/5">
+                        <div class="text-[9px] font-bold text-white/40 uppercase mb-1">Active Missions</div>
+                        @php
+                            $activeMissions = \App\Models\SOSRequest::where('status', 'pending')->count();
+                            $totalMissions = max(12, \App\Models\SOSRequest::count());
+                        @endphp
+                        <div class="text-xl font-mono text-white">{{ str_pad($activeMissions, 2, '0', STR_PAD_LEFT) }}/{{ str_pad($totalMissions, 2, '0', STR_PAD_LEFT) }}</div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="map-section">
-        <div class="map-container-wrapper">
-            <h2 class="section-title">Global Coordination Map</h2>
-            <p class="section-subtitle">Visualize ongoing operations, track live responder movements, and identify disaster epicenters across multiple jurisdictions in one unified view.</p>
-            <div class="map-visual">
-                <i class="fas fa-map-location-dot"></i>
-                <p>Interactive Map Dashboard Available Post-Login</p>
-                <div style="position:absolute; top:30%; left:20%; width:10px; height:10px; background:var(--accent); border-radius:50%; box-shadow:0 0 15px var(--accent); animation:pulse 2s infinite;"></div>
-                <div style="position:absolute; top:60%; left:70%; width:15px; height:15px; background:var(--peach); border-radius:50%; box-shadow:0 0 20px var(--peach); animation:pulse 1.5s infinite;"></div>
-                <div style="position:absolute; top:40%; left:80%; width:8px; height:8px; background:#4caf50; border-radius:50%; box-shadow:0 0 10px #4caf50; animation:pulse 3s infinite;"></div>
-                <div style="position:absolute; top:75%; left:35%; width:12px; height:12px; background:var(--accent); border-radius:50%; box-shadow:0 0 15px var(--accent); animation:pulse 2.5s infinite;"></div>
-                <div style="position:absolute; top:20%; left:60%; width:9px; height:9px; background:#2196f3; border-radius:50%; box-shadow:0 0 12px #2196f3; animation:pulse 1.8s infinite;"></div>
+    <!-- Real-Time Pulse Ticker -->
+    <div class="bg-obsidian border-y border-white/5 py-4 overflow-hidden">
+        <div class="flex gap-12 whitespace-nowrap animate-[ticker_30s_linear_infinite] hover:[animation-play-state:paused]">
+            <div class="flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+                <span class="text-alert-cyan flex items-center gap-2"><span class="material-symbols-outlined text-sm animate-spin">sync</span> SCANNING REGION: NCR...</span>
+                <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> UNIT 42 DEPLOYED</span>
+                <span class="text-emergency-red flex items-center gap-2"><span class="material-symbols-outlined text-sm">warning</span> FLOOD ALERT: KERALA</span>
+                <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-alert-cyan rounded-full"></span> SATELLITE UPLINK STABLE</span>
+                <span>// MISSION TRACE 0X9A4F</span>
+            </div>
+            <!-- Duplicated for seamless loop -->
+            <div class="flex items-center gap-8 text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+                <span class="text-alert-cyan flex items-center gap-2"><span class="material-symbols-outlined text-sm animate-spin">sync</span> SCANNING REGION: NCR...</span>
+                <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> UNIT 42 DEPLOYED</span>
+                <span class="text-emergency-red flex items-center gap-2"><span class="material-symbols-outlined text-sm">warning</span> FLOOD ALERT: KERALA</span>
+                <span class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-alert-cyan rounded-full"></span> SATELLITE UPLINK STABLE</span>
+                <span>// MISSION TRACE 0X9A4F</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agency Ecosystem -->
+    <section class="py-32 px-12 lg:px-24 reveal-stagger">
+        <div class="flex flex-col items-center text-center mb-20">
+            <h2 class="font-headline text-4xl font-bold text-white mb-4">The Sovereign Ecosystem</h2>
+            <p class="text-white/40 max-w-xl">A unified grid of India's elite first-response agencies, connected via ResQNet core.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="group relative tactical-glass p-8 rounded-3xl border-white/5 hover:border-alert-cyan/30 transition-all cursor-crosshair">
+                <div class="h-20 flex items-center justify-center mb-6 grayscale group-hover:grayscale-0 transition-all">
+                    <img alt="Agency" class="h-16 opacity-50 group-hover:opacity-100" src="https://lh3.googleusercontent.com/aida/ADBb0ug-6AqEgtVjvXHSOQJdkYcIXJy_CftiduH7r8vk82MKiKmDzrGIeCmt8jUWPkbIhJpf4PR0iSVI6lowKIO5hnujoX_UAEA6RBmJhhjS0CAs5_GGKIBG4_Tg7BKASh0k7PyW56BJifdFgBMaNlB8hNrNXTkrIrigURRoMRbT4FX-s1oooklOU2nO-Mk16TRrRLRvkY0G8dds0awMAId5z4kxjhXWvhH3Cb0_zOXOavYUifmT7vExzbgUT8A"/>
+                </div>
+                <div class="text-center">
+                    <div class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Response Agency</div>
+                    <div class="text-sm font-bold text-white group-hover:text-alert-cyan">NDRF STRATEGIC</div>
+                </div>
+                <!-- Tactical Stats on Hover -->
+                <div class="absolute inset-0 bg-obsidian/95 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-center rounded-3xl">
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <div class="text-[9px] text-alert-cyan font-bold uppercase">Personnel Online</div>
+                            <div class="text-xl font-mono text-white">1,420</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-alert-cyan font-bold uppercase">Fleet Readiness</div>
+                            <div class="text-xl font-mono text-white">98.4%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="group relative tactical-glass p-8 rounded-3xl border-white/5 hover:border-alert-cyan/30 transition-all cursor-crosshair">
+                <div class="h-20 flex items-center justify-center mb-6">
+                    <div class="w-16 h-16 rounded-full border-2 border-white/10 flex items-center justify-center opacity-30">
+                        <img class="w-8 h-8 filter invert opacity-60" src="https://lh3.googleusercontent.com/aida/ADBb0ug5RUmAALsrqPjYynEGUOnC2Z6b_P9KAsXpLqwq1eNpxo1tYx2HlCDUd_TECxf4p8v4Ymp62j8fOQzKXJ8IQ4sSbmSYQXjmbB-GDMd799EKFfVXYFUnlgyNz0hD2_MwcVsdhMBJ1SwWmb46ZWgDP0mbfZSOr5RtHZw4dNz4LBemaIN3jfBHOupQjexPHWk-itisZ8IDZNQXUdkM59EWlzgCOeIkLyNDARRKy4oDx_NWlP3jo560UUv2zIc"/>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Urban Security</div>
+                    <div class="text-sm font-bold text-white group-hover:text-alert-cyan">POLICE TASK FORCE</div>
+                </div>
+                <div class="absolute inset-0 bg-obsidian/95 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-center rounded-3xl">
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <div class="text-[9px] text-alert-cyan font-bold uppercase">Active Patrols</div>
+                            <div class="text-xl font-mono text-white">842</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-alert-cyan font-bold uppercase">Response Time</div>
+                            <div class="text-xl font-mono text-white">4.2m</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="group relative tactical-glass p-8 rounded-3xl border-white/5 hover:border-alert-cyan/30 transition-all cursor-crosshair">
+                <div class="h-20 flex items-center justify-center mb-6">
+                    <div class="w-16 h-16 rounded-full border-2 border-white/10 flex items-center justify-center opacity-30">
+                        <img class="w-8 h-8 filter invert opacity-60" src="https://lh3.googleusercontent.com/aida/ADBb0uht1hChjQDGNrVIU0zotIb4hrgQcZQThzXegxbW7v7sW3XF8lQ66DbgRVUa9tmjLx0dQfiHeef7gWoXH0l1L9_qrSw6LwIdqc7H_FX55053soe1cNQX3w-7EPwVHUQylN01eqzjZtMxp6GXfrmhA-fmDg9P1SjjxcebgFbd60SEGRuY1EG3FI2lTj5BMYcbYyfD_ZjZHgUjHa_OhLfNMVU-sUD0l4JKiPe2QwD6DcQwMFTjRy1nSU4RqDM"/>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Medical Corp</div>
+                    <div class="text-sm font-bold text-white group-hover:text-alert-cyan">HMS EMERGENCY</div>
+                </div>
+                <div class="absolute inset-0 bg-obsidian/95 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-center rounded-3xl">
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <div class="text-[9px] text-alert-cyan font-bold uppercase">Beds Available</div>
+                            <div class="text-xl font-mono text-white">21,092</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-alert-cyan font-bold uppercase">Air-Lift Ready</div>
+                            <div class="text-xl font-mono text-white">12</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="group relative tactical-glass p-8 rounded-3xl border-white/5 hover:border-alert-cyan/30 transition-all cursor-crosshair">
+                <div class="h-20 flex items-center justify-center mb-6">
+                    <div class="w-16 h-16 rounded-full border-2 border-white/10 flex items-center justify-center opacity-30">
+                        <img class="w-8 h-8 filter invert opacity-60" src="https://lh3.googleusercontent.com/aida/ADBb0uh6avePo0NTzhpJuy7uElSOQj5TUlrSU4fqpLtYUP-tsDZR7SdASoHlvpRbQDilnbzG31jv8JK-gji8sqyJQxibUoFowf3utggTppocgE6X30Y6vpF3v6eT1h_ThG33YJ6sXCFjITgNois-LxmAnvyzNWH7NBBDgK_jz1eaq0oRoDUQ0iYfTTz714C32oKl6NVwc9Rz4E_HZUzG4CUeY7V3kDcHRr3uKYaJP8_-gwbAJ1PJSPNF2fuxow"/>
+                    </div>
+                </div>
+                <div class="text-center">
+                    <div class="text-[10px] font-bold text-white/30 uppercase tracking-widest mb-1">Civil Defense</div>
+                    <div class="text-sm font-bold text-white group-hover:text-alert-cyan">FIRE &amp; HAZMAT</div>
+                </div>
+                <div class="absolute inset-0 bg-obsidian/95 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-center rounded-3xl">
+                    <div class="space-y-4 text-left">
+                        <div>
+                            <div class="text-[9px] text-alert-cyan font-bold uppercase">Units Ready</div>
+                            <div class="text-xl font-mono text-white">412</div>
+                        </div>
+                        <div>
+                            <div class="text-[9px] text-alert-cyan font-bold uppercase">Water Supply</div>
+                            <div class="text-xl font-mono text-white">92%</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <footer class="footer-landing">
-        <div>
-            <div class="footer-brand">ResQNet</div>
-            <div class="footer-copy">&copy; {{ date('Y') }} ResQNet. Official Emergency Response Coordination Platform.</div>
+    <!-- Mission Timeline -->
+    <section class="py-32 px-12 lg:px-24 bg-white/2 relative overflow-hidden reveal-stagger">
+        <div class="absolute top-0 right-0 w-[500px] h-[500px] bg-alert-cyan/5 blur-[150px] rounded-full"></div>
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-16">
+                <span class="text-alert-cyan font-bold text-[11px] uppercase tracking-[0.3em]">Operational Insight</span>
+                <h2 class="font-headline text-4xl font-extrabold text-white mt-2">Rescue in Progress</h2>
+            </div>
+            <div class="relative pl-12 border-l border-white/10 space-y-24">
+                <!-- Step 1 -->
+                <div class="relative">
+                    <div class="absolute -left-[54px] top-0 w-4 h-4 bg-alert-cyan rounded-full ring-8 ring-alert-cyan/20"></div>
+                    <div class="tactical-glass p-8 rounded-3xl border-white/5">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-bold text-white/50 font-mono">T+00:00:12</span>
+                            <span class="bg-green-500/20 text-green-500 px-3 py-1 rounded text-[10px] font-bold uppercase">Signal Intercepted</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Automated SOS Protocol Activated</h4>
+                        <p class="text-white/50 text-sm">Satellite detection identified high-velocity structural anomaly in District 4. Coordination node triggered.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 2 -->
+                <div class="relative">
+                    <div class="absolute -left-[54px] top-0 w-4 h-4 bg-alert-cyan rounded-full ring-8 ring-alert-cyan/10 opacity-60"></div>
+                    <div class="tactical-glass p-8 rounded-3xl border-white/5">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-bold text-white/50 font-mono">T+00:02:45</span>
+                            <span class="bg-alert-cyan/20 text-alert-cyan px-3 py-1 rounded text-[10px] font-bold uppercase">Resources Allocated</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Asset Deployment: Air &amp; Land</h4>
+                        <p class="text-white/50 text-sm">AI-driven logistics routed 2 medical drones and 1 ground recovery unit. ETA: 4 minutes.</p>
+                    </div>
+                </div>
+                
+                <!-- Step 3 (Current) -->
+                <div class="relative">
+                    <div class="absolute -left-[54px] top-0 w-4 h-4 bg-emergency-red rounded-full animate-ping"></div>
+                    <div class="tactical-glass p-8 rounded-3xl border-emergency-red/30 bg-emergency-red/5">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="text-xs font-bold text-emergency-red font-mono">CURRENT STATUS</span>
+                            <span class="bg-emergency-red/20 text-emergency-red px-3 py-1 rounded text-[10px] font-bold uppercase">Active Extraction</span>
+                        </div>
+                        <h4 class="text-xl font-bold text-white mb-2">Ground Operation: Multi-Agency Link</h4>
+                        <p class="text-white/50 text-sm">NDRF and Local EMS on-site. Encrypted data mesh established between tactical units.</p>
+                        <div class="mt-6 w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
+                            <div class="bg-emergency-red h-full w-[72%] transition-all duration-1000"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="footer-links">
-            <a href="#">Privacy Policy</a>
-            <a href="#">Terms of Service</a>
-            <a href="#">Government Seals</a>
-            <a href="#">Emergency Hotlines</a>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-obsidian border-t border-white/5 py-24 px-12 lg:px-24">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
+            <div class="md:col-span-1">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="font-headline text-xl font-bold tracking-tighter text-white/50">RESQNET</span>
+                </div>
+                <p class="text-white/30 text-xs leading-relaxed">
+                    The Official Crisis Coordination Platform of the Sovereign Republic. Built on Government-Grade Mesh Infrastructure.
+                </p>
+            </div>
+            <div>
+                <h5 class="text-[10px] font-bold text-alert-cyan uppercase tracking-[0.2em] mb-6">Strategic Hotlines</h5>
+                <ul class="space-y-4">
+                    <li><a class="text-neon-orange font-bold text-lg hover:brightness-125 transition-all text-decoration-none" href="#">108 - MEDICAL</a></li>
+                    <li><a class="text-neon-orange font-bold text-lg hover:brightness-125 transition-all text-decoration-none" href="#">101 - FIRE RED</a></li>
+                    <li><a class="text-white/50 hover:text-white transition-colors text-decoration-none" href="#">Emergency Protocol A-1</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-6">Legal &amp; Compliance</h5>
+                <ul class="space-y-3">
+                    <li><a class="text-xs text-white/50 hover:text-alert-cyan transition-colors text-decoration-none" href="#">Privacy Framework</a></li>
+                    <li><a class="text-xs text-white/50 hover:text-alert-cyan transition-colors text-decoration-none" href="#">National Data Security</a></li>
+                    <li><a class="text-xs text-white/50 hover:text-alert-cyan transition-colors text-decoration-none" href="#">Audit Logs</a></li>
+                </ul>
+            </div>
+            <div>
+                <h5 class="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] mb-6">Network Node</h5>
+                <div class="tactical-glass p-4 rounded-xl border-white/5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span class="text-[10px] font-mono text-white/60">Node: ASIA-SOUTH-1</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto mt-24 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="text-[10px] text-white/20 font-bold uppercase tracking-widest">© {{ date('Y') }} RESQNET. MINISTRY OF EMERGENCY COORDINATION.</span>
+            <div class="flex gap-8">
+                <span class="text-[10px] text-white/20 font-bold uppercase tracking-widest cursor-pointer hover:text-white">Twitter / X</span>
+                <span class="text-[10px] text-white/20 font-bold uppercase tracking-widest cursor-pointer hover:text-white">Github Sovereign</span>
+            </div>
         </div>
     </footer>
+
+    <script>
+        // Nav shrink on scroll
+        const nav = document.getElementById('mainNav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // Intersection Observer for stagger animations
+        const observerOptions = { threshold: 0.2 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-stagger').forEach((el) => observer.observe(el));
+    </script>
 </body>
 </html>

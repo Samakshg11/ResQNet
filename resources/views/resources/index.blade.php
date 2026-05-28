@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Resources')
 @section('content')
-<div class="page-header"><div><h1>Resource Inventory</h1><p>Track, deploy, and manage operational resources.</p></div></div>
+<div class="page-header"><div><h1>Resource Inventory</h1><p>Track, deploy, and manage resources.</p></div></div>
 @if($shortages->count() > 0)
 <div class="alert-banner" style="margin-bottom:24px">
     <div class="alert-banner-left"><span class="live-dot"></span><span class="alert-banner-text">{{ $shortages->count() }} resource(s) below minimum threshold</span></div>

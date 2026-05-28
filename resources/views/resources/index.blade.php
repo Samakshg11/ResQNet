@@ -12,7 +12,7 @@
         <table>
             <thead><tr><th>Resource</th><th>Category</th><th>Agency</th><th>Available</th><th>Deployed</th><th>Total</th><th>Status</th><th>Action</th></tr></thead>
             <tbody>
-            @forelse($ as $r)
+            @forelse($resources as $r)
             <tr>
                 <td style="color:var(--text);font-weight:500">{{ $r->name }}</td>
                 <td style="text-transform:capitalize">{{ str_replace('_',' ',$r->category) }}</td>

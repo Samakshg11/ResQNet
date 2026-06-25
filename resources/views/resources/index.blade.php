@@ -50,7 +50,26 @@
                 <td>{{ $r->deployed_quantity }}</td>
                 <td>{{ $r->total_quantity }}</td>
                 <td><span class="badge badge-{{ $statusClass }}">{{ strtoupper($r->status) }}</span></td>
-                <td>@if($r->status !== 'depleted' && $r->available_quantity > 0)<form method="POST" action="{{ route('resources.deploy', $r->id) }}" style="display:flex;gap:4px">@csrf<input type="number" name="quantity" class="form-control" style="width:60px;padding:6px 8px;font-size:12px" min="1" max="{{ $r->available_quantity }}" value="1"><button class="btn btn-ghost btn-sm">Deploy</button></form>@else<span style="color:var(--text-muted)">—</span>@endif</td>
+                <td>
+                    @if($r->status !== 'depleted' && $r->available_quantity > 0)
+                        <form method="POST" action="{{ route('resources.deploy', $r->id) }}" style="display:flex;gap:6px;align-items:center">
+                            @csrf
+                            <input
+                                type="number"
+                                name="quantity"
+                                class="form-control"
+                                style="width:72px;padding:6px 8px;font-size:12px"
+                                min="1"
+                                max="{{ $r->available_quantity }}"
+                                value="1"
+                                aria-label="Quantity to deploy for {{ $r->name }}"
+                            >
+                            <button class="btn btn-ghost btn-sm" type="submit">Deploy</button>
+                        </form>
+                    @else
+                        <span style="color:var(--text-muted)">—</span>
+                    @endif
+                </td>
             </tr>
             @empty
             <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px">No resources.</td></tr>

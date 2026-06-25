@@ -10,6 +10,24 @@ class Resource extends Model
 {
     use HasFactory, HasUuids;
 
+    public const CATEGORIES = [
+        'food' => 'Food',
+        'medical_kit' => 'Medical kit',
+        'vehicle' => 'Vehicle',
+        'boat' => 'Boat',
+        'rescue_team' => 'Rescue team',
+        'fuel' => 'Fuel',
+        'shelter_kit' => 'Shelter kit',
+        'communication' => 'Communication',
+        'heavy_equipment' => 'Heavy equipment',
+        'other' => 'Other',
+    ];
+
+    public const STATUSES = [
+        'available' => 'Available',
+        'depleted' => 'Depleted',
+    ];
+
     protected $fillable = [
         'agency_id', 'name', 'category', 'total_quantity',
         'available_quantity', 'deployed_quantity', 'unit',

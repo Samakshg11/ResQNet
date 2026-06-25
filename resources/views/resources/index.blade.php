@@ -2,6 +2,32 @@
 @section('title', 'Resources')
 @section('content')
 <div class="page-header"><div><h1>Resource Inventory</h1><p>Track, deploy, and manage operational resources.</p></div></div>
+<form method="GET" action="{{ route('resources.index') }}" class="card" style="margin-bottom:24px">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end">
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Category</label>
+            <select name="category" class="form-control">
+                <option value="">All categories</option>
+                @foreach(\App\Models\Resource::CATEGORIES as $value => $label)
+                    <option value="{{ $value }}" @selected(request('category') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-control">
+                <option value="">All statuses</option>
+                @foreach(\App\Models\Resource::STATUSES as $value => $label)
+                    <option value="{{ $value }}" @selected(request('status') === $value)>{{ $label }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-primary" type="submit">Apply Filters</button>
+            <a href="{{ route('resources.index') }}" class="btn btn-ghost">Reset</a>
+        </div>
+    </div>
+</form>
 @if($shortages->count() > 0)
 <div class="alert-banner" style="margin-bottom:24px">
     <div class="alert-banner-left"><span class="live-dot"></span><span class="alert-banner-text">{{ $shortages->count() }} resource(s) below minimum threshold</span></div>

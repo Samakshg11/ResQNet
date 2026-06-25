@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Resource;
 use App\Models\Agency;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ResourceController extends Controller
 {
@@ -54,7 +55,7 @@ class ResourceController extends Controller
         $validated = $request->validate([
             'agency_id' => 'required|exists:agencies,id',
             'name' => 'required|string|max:255',
-            'category' => 'required|in:food,medical_kit,vehicle,boat,rescue_team,fuel,shelter_kit,communication,heavy_equipment,other',
+            'category' => ['required', Rule::in(array_keys(Resource::CATEGORIES))],
             'total_quantity' => 'required|integer|min:1',
             'available_quantity' => 'required|integer|min:0',
             'unit' => 'required|string',

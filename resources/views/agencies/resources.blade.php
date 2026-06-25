@@ -24,13 +24,35 @@
                     <thead><tr><th>Resource</th><th>Category</th><th>Available</th><th>Deployed</th><th>Status</th><th>Action</th></tr></thead>
                     <tbody>
                     @forelse($resources as $r)
+                    @php
+                        $statusClass = $r->status === 'available' ? 'available' : ($r->status === 'depleted' ? 'critical' : 'pending');
+                    @endphp
                     <tr>
                         <td style="color:var(--text);font-weight:500">{{ $r->name }}</td>
-                        <td style="text-transform:capitalize">{{ str_replace('_',' ',$r->category) }}</td>
+                        <td>{{ \App\Models\Resource::CATEGORIES[$r->category] ?? Str::headline($r->category) }}</td>
                         <td style="font-weight:600;color:{{ $r->isLow() ? 'var(--accent)' : 'var(--green)' }}">{{ $r->available_quantity }} {{ $r->unit }}</td>
                         <td>{{ $r->deployed_quantity }}</td>
-                        <td><span class="badge badge-{{ $r->status === 'available' ? 'available' : ($r->status === 'depleted' ? 'critical' : 'pending') }}">{{ strtoupper($r->status) }}</span></td>
-                        <td>@if($r->status !== 'depleted' && $r->available_quantity > 0)<form method="POST" action="{{ route('agency.resources.deploy', $r->id) }}" style="display:flex;gap:4px">@csrf<input type="number" name="quantity" class="form-control" style="width:60px;padding:6px 8px;font-size:12px" min="1" max="{{ $r->available_quantity }}" value="1"><button class="btn btn-ghost btn-sm">Deploy</button></form>@else<span style="color:var(--text-muted)">—</span>@endif</td>
+                        <td><span class="badge badge-{{ $statusClass }}">{{ strtoupper($r->status) }}</span></td>
+                        <td>
+                            @if($r->status !== 'depleted' && $r->available_quantity > 0)
+                                <form method="POST" action="{{ route('agency.resources.deploy', $r->id) }}" style="display:flex;gap:6px;align-items:center">
+                                    @csrf
+                                    <input
+                                        type="number"
+                                        name="quantity"
+                                        class="form-control"
+                                        style="width:72px;padding:6px 8px;font-size:12px"
+                                        min="1"
+                                        max="{{ $r->available_quantity }}"
+                                        value="1"
+                                        aria-label="Quantity to deploy for {{ $r->name }}"
+                                    >
+                                    <button class="btn btn-ghost btn-sm" type="submit">Deploy</button>
+                                </form>
+                            @else
+                                <span style="color:var(--text-muted)">—</span>
+                            @endif
+                        </td>
                     </tr>
                     @empty
                     <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px">No resources.</td></tr>
@@ -54,16 +76,9 @@
                 <div class="form-group">
                     <label class="form-label">Category</label>
                     <select name="category" class="form-control" required>
-                        <option value="food">Food & Water</option>
-                        <option value="medical_kit">Medical Kits</option>
-                        <option value="vehicle">Vehicles</option>
-                        <option value="boat">Rescue Boats</option>
-                        <option value="rescue_team">Rescue Teams</option>
-                        <option value="fuel">Fuel</option>
-                        <option value="shelter_kit">Shelter Kits</option>
-                        <option value="communication">Comms Equipment</option>
-                        <option value="heavy_equipment">Heavy Equipment</option>
-                        <option value="other">Other</option>
+                        @foreach(\App\Models\Resource::CATEGORIES as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="form-row">

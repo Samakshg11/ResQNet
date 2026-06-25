@@ -33,7 +33,7 @@ class ResourceController extends Controller
 
     public function agencyIndex(Request $request)
     {
-        $agency = clone $request->user()->agency;
+        $agency = $request->user()->agency;
         if (!$agency) {
             return redirect()->route('agency.dashboard')->withErrors('You do not have an agency profile.');
         }

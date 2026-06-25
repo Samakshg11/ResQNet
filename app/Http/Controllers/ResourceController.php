@@ -26,7 +26,7 @@ class ResourceController extends Controller
         }
 
         $resources = $query->paginate(15)->withQueryString();
-        $shortages = Resource::whereColumn('available_quantity', '<=', 'minimum_threshold')->with('agency')->get();
+        $shortages = Resource::shortage()->with('agency')->get();
 
         return view('resources.index', compact('resources', 'shortages'));
     }
@@ -54,7 +54,7 @@ class ResourceController extends Controller
 
         $resources = $query->paginate(15)->withQueryString();
         $shortages = Resource::where('agency_id', $agency->id)
-            ->whereColumn('available_quantity', '<=', 'minimum_threshold')
+            ->shortage()
             ->get();
 
         return view('agencies.resources', compact('resources', 'shortages', 'agency'));

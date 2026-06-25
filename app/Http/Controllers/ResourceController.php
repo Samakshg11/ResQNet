@@ -11,13 +11,18 @@ class ResourceController extends Controller
 {
     public function index(Request $request)
     {
+        $filters = $request->validate([
+            'category' => ['nullable', Rule::in(array_keys(Resource::CATEGORIES))],
+            'status' => ['nullable', Rule::in(array_keys(Resource::STATUSES))],
+        ]);
+
         $query = Resource::with('agency')->latest();
 
-        if ($request->filled('category')) {
-            $query->where('category', $request->category);
+        if (!empty($filters['category'])) {
+            $query->where('category', $filters['category']);
         }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
         }
 
         $resources = $query->paginate(15);
@@ -33,13 +38,18 @@ class ResourceController extends Controller
             return redirect()->route('agency.dashboard')->withErrors('You do not have an agency profile.');
         }
 
+        $filters = $request->validate([
+            'category' => ['nullable', Rule::in(array_keys(Resource::CATEGORIES))],
+            'status' => ['nullable', Rule::in(array_keys(Resource::STATUSES))],
+        ]);
+
         $query = Resource::where('agency_id', $agency->id)->latest();
 
-        if ($request->filled('category')) {
-            $query->where('category', $request->category);
+        if (!empty($filters['category'])) {
+            $query->where('category', $filters['category']);
         }
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
         }
 
         $resources = $query->paginate(15);

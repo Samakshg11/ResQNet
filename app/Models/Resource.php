@@ -25,6 +25,8 @@ class Resource extends Model
 
     public const STATUSES = [
         'available' => 'Available',
+        'deployed' => 'Deployed',
+        'maintenance' => 'Maintenance',
         'depleted' => 'Depleted',
     ];
 

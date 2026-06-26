@@ -2,6 +2,12 @@
 @section('title', 'Resources')
 @section('content')
 <div class="page-header"><div><h1>Resource Inventory</h1><p>Track, deploy, and manage operational resources.</p></div></div>
+<div class="stats-grid" style="margin-bottom:24px">
+    <div class="stat-card"><span class="stat-label">Total Resources</span><span class="stat-value">{{ number_format($summary['total']) }}</span></div>
+    <div class="stat-card"><span class="stat-label">Available</span><span class="stat-value">{{ number_format($summary['available']) }}</span></div>
+    <div class="stat-card"><span class="stat-label">Depleted</span><span class="stat-value">{{ number_format($summary['depleted']) }}</span></div>
+    <div class="stat-card"><span class="stat-label">Shortages</span><span class="stat-value">{{ number_format($summary['shortages']) }}</span></div>
+</div>
 <form method="GET" action="{{ route('resources.index') }}" class="card" style="margin-bottom:24px">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end">
         <div class="form-group" style="margin-bottom:0">

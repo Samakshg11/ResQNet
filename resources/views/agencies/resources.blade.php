@@ -36,10 +36,10 @@
                     @endphp
                     <tr>
                         <td style="color:var(--text);font-weight:500">{{ $r->name }}</td>
-                        <td>{{ \App\Models\Resource::CATEGORIES[$r->category] ?? Str::headline($r->category) }}</td>
+                        <td>{{ $r->categoryLabel() }}</td>
                         <td style="font-weight:600;color:{{ $r->isLow() ? 'var(--accent)' : 'var(--green)' }}">{{ $r->available_quantity }} {{ $r->unit }}</td>
                         <td>{{ $r->deployed_quantity }}</td>
-                        <td><span class="badge badge-{{ $statusClass }}">{{ strtoupper($r->status) }}</span></td>
+                        <td><span class="badge badge-{{ $statusClass }}">{{ $r->statusLabel() }}</span></td>
                         <td>
                             @if($r->status !== 'depleted' && $r->available_quantity > 0)
                                 <form method="POST" action="{{ route('agency.resources.deploy', $r->id) }}" style="display:flex;gap:6px;align-items:center">

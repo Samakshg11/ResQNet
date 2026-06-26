@@ -107,7 +107,9 @@ class ResourceController extends Controller
             return back()->withErrors(['quantity' => 'This resource is depleted and cannot be deployed.']);
         }
 
-        $qty = $request->validate(['quantity' => 'required|integer|min:1'])['quantity'];
+        $qty = $request->validate([
+            'quantity' => ['required', 'integer', 'min:1', 'max:' . $resource->available_quantity],
+        ])['quantity'];
 
         if ($qty > $resource->available_quantity) {
             return back()->withErrors(['quantity' => 'Insufficient quantity available.']);

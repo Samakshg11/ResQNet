@@ -18,12 +18,9 @@ class ResourceController extends Controller
 
         $query = Resource::with('agency')->latest();
 
-        if (!empty($filters['category'])) {
-            $query->where('category', $filters['category']);
-        }
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
+        $query
+            ->ofCategory($filters['category'] ?? null)
+            ->withStatus($filters['status'] ?? null);
 
         $resources = $query->paginate(15)->withQueryString();
         $shortages = Resource::shortage()->with('agency')->get();
@@ -45,12 +42,9 @@ class ResourceController extends Controller
 
         $query = Resource::where('agency_id', $agency->id)->latest();
 
-        if (!empty($filters['category'])) {
-            $query->where('category', $filters['category']);
-        }
-        if (!empty($filters['status'])) {
-            $query->where('status', $filters['status']);
-        }
+        $query
+            ->ofCategory($filters['category'] ?? null)
+            ->withStatus($filters['status'] ?? null);
 
         $resources = $query->paginate(15)->withQueryString();
         $shortages = Resource::where('agency_id', $agency->id)

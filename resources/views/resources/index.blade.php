@@ -43,7 +43,7 @@
 <div class="card">
     <div class="table-wrap">
         <table>
-            <thead><tr><th>Resource</th><th>Category</th><th>Agency</th><th>Available</th><th>Deployed</th><th>Total</th><th>Status</th><th>Action</th></tr></thead>
+            <thead><tr><th>Resource</th><th>Category</th><th>Agency</th><th>Available</th><th>Deployed</th><th>Total</th><th>Utilized</th><th>Status</th><th>Action</th></tr></thead>
             <tbody>
             @forelse($resources as $r)
             @php
@@ -56,6 +56,7 @@
                 <td style="font-weight:600;color:{{ $r->isLow() ? 'var(--accent)' : 'var(--green)' }}">{{ $r->available_quantity }} {{ $r->unit }}</td>
                 <td>{{ $r->deployed_quantity }}</td>
                 <td>{{ $r->total_quantity }}</td>
+                <td>{{ $r->deployedPercentage() }}%</td>
                 <td><span class="badge badge-{{ $statusClass }}">{{ $r->statusLabel() }}</span></td>
                 <td>
                     @if($r->status !== 'depleted' && $r->available_quantity > 0)
@@ -79,7 +80,7 @@
                 </td>
             </tr>
             @empty
-            <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:40px">No resources.</td></tr>
+            <tr><td colspan="9" style="text-align:center;color:var(--text-muted);padding:40px">No resources.</td></tr>
             @endforelse
             </tbody>
         </table>

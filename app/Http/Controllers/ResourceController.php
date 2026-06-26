@@ -24,8 +24,14 @@ class ResourceController extends Controller
 
         $resources = $query->paginate(15)->withQueryString();
         $shortages = Resource::shortage()->with('agency')->get();
+        $summary = [
+            'total' => Resource::count(),
+            'available' => Resource::available()->count(),
+            'depleted' => Resource::where('status', 'depleted')->count(),
+            'shortages' => $shortages->count(),
+        ];
 
-        return view('resources.index', compact('resources', 'shortages'));
+        return view('resources.index', compact('resources', 'shortages', 'summary'));
     }
 
     public function agencyIndex(Request $request)
@@ -50,8 +56,14 @@ class ResourceController extends Controller
         $shortages = Resource::where('agency_id', $agency->id)
             ->shortage()
             ->get();
+        $summary = [
+            'total' => Resource::where('agency_id', $agency->id)->count(),
+            'available' => Resource::where('agency_id', $agency->id)->available()->count(),
+            'depleted' => Resource::where('agency_id', $agency->id)->where('status', 'depleted')->count(),
+            'shortages' => $shortages->count(),
+        ];
 
-        return view('agencies.resources', compact('resources', 'shortages', 'agency'));
+        return view('agencies.resources', compact('resources', 'shortages', 'agency', 'summary'));
     }
 
     public function store(Request $request)

@@ -9,6 +9,13 @@
     </div>
 </div>
 
+<div class="stats-grid" style="margin-bottom:24px">
+    <div class="stat-card"><span class="stat-label">Total Resources</span><span class="stat-value">{{ number_format($summary['total']) }}</span></div>
+    <div class="stat-card"><span class="stat-label">Available</span><span class="stat-value">{{ number_format($summary['available']) }}</span></div>
+    <div class="stat-card"><span class="stat-label">Depleted</span><span class="stat-value">{{ number_format($summary['depleted']) }}</span></div>
+    <div class="stat-card"><span class="stat-label">Shortages</span><span class="stat-value">{{ number_format($summary['shortages']) }}</span></div>
+</div>
+
 @if($shortages->count() > 0)
 <div class="alert-banner" style="margin-bottom:24px">
     <div class="alert-banner-left"><span class="live-dot"></span><span class="alert-banner-text">{{ $shortages->count() }} resource(s) below minimum threshold</span></div>

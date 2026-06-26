@@ -28,7 +28,7 @@
             <span class="section-title">Current Inventory</span>
             <div class="table-wrap">
                 <table>
-                    <thead><tr><th>Resource</th><th>Category</th><th>Available</th><th>Deployed</th><th>Status</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Resource</th><th>Category</th><th>Available</th><th>Deployed</th><th>Utilized</th><th>Status</th><th>Action</th></tr></thead>
                     <tbody>
                     @forelse($resources as $r)
                     @php
@@ -39,6 +39,7 @@
                         <td>{{ $r->categoryLabel() }}</td>
                         <td style="font-weight:600;color:{{ $r->isLow() ? 'var(--accent)' : 'var(--green)' }}">{{ $r->available_quantity }} {{ $r->unit }}</td>
                         <td>{{ $r->deployed_quantity }}</td>
+                        <td>{{ $r->deployedPercentage() }}%</td>
                         <td><span class="badge badge-{{ $statusClass }}">{{ $r->statusLabel() }}</span></td>
                         <td>
                             @if($r->status !== 'depleted' && $r->available_quantity > 0)
@@ -62,7 +63,7 @@
                         </td>
                     </tr>
                     @empty
-                    <tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:40px">No resources.</td></tr>
+                    <tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:40px">No resources.</td></tr>
                     @endforelse
                     </tbody>
                 </table>

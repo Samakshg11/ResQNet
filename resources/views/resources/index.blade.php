@@ -9,6 +9,7 @@
     <div class="stat-card"><span class="stat-label">Shortages</span><span class="stat-value">{{ number_format($summary['shortages']) }}</span></div>
 </div>
 <form method="GET" action="{{ route('resources.index') }}" class="card" style="margin-bottom:24px">
+    <span class="section-title">Inventory Filters</span>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;align-items:end">
         <div class="form-group" style="margin-bottom:0">
             <label class="form-label">Category</label>

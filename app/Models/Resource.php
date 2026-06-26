@@ -51,6 +51,25 @@ class Resource extends Model
         return $this->available_quantity <= $this->minimum_threshold;
     }
 
+    public function categoryLabel(): string
+    {
+        return self::CATEGORIES[$this->category] ?? str($this->category)->headline()->toString();
+    }
+
+    public function statusLabel(): string
+    {
+        return self::STATUSES[$this->status] ?? str($this->status)->headline()->toString();
+    }
+
+    public function deployedPercentage(): int
+    {
+        if ($this->total_quantity <= 0) {
+            return 0;
+        }
+
+        return (int) round(($this->deployed_quantity / $this->total_quantity) * 100);
+    }
+
     public function scopeAvailable($query)
     {
         return $query->where('status', 'available');

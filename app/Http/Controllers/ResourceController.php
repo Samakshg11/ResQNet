@@ -24,10 +24,11 @@ class ResourceController extends Controller
 
         $resources = $query->paginate(15)->withQueryString();
         $shortages = Resource::shortage()->with('agency')->get();
+        $summaryQuery = Resource::query();
         $summary = [
-            'total' => Resource::count(),
-            'available' => Resource::available()->count(),
-            'depleted' => Resource::where('status', 'depleted')->count(),
+            'total' => (clone $summaryQuery)->count(),
+            'available' => (clone $summaryQuery)->available()->count(),
+            'depleted' => (clone $summaryQuery)->where('status', 'depleted')->count(),
             'shortages' => $shortages->count(),
         ];
 
@@ -56,10 +57,11 @@ class ResourceController extends Controller
         $shortages = Resource::where('agency_id', $agency->id)
             ->shortage()
             ->get();
+        $summaryQuery = Resource::where('agency_id', $agency->id);
         $summary = [
-            'total' => Resource::where('agency_id', $agency->id)->count(),
-            'available' => Resource::where('agency_id', $agency->id)->available()->count(),
-            'depleted' => Resource::where('agency_id', $agency->id)->where('status', 'depleted')->count(),
+            'total' => (clone $summaryQuery)->count(),
+            'available' => (clone $summaryQuery)->available()->count(),
+            'depleted' => (clone $summaryQuery)->where('status', 'depleted')->count(),
             'shortages' => $shortages->count(),
         ];
 

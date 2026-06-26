@@ -75,6 +75,16 @@ class Resource extends Model
         return $query->where('status', 'available');
     }
 
+    public function scopeOfCategory($query, ?string $category)
+    {
+        return $query->when($category, fn ($query) => $query->where('category', $category));
+    }
+
+    public function scopeWithStatus($query, ?string $status)
+    {
+        return $query->when($status, fn ($query) => $query->where('status', $status));
+    }
+
     public function scopeShortage($query)
     {
         return $query->whereColumn('available_quantity', '<=', 'minimum_threshold');

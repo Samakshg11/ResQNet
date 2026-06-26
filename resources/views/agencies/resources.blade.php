@@ -79,34 +79,34 @@
                 <input type="hidden" name="agency_id" value="{{ auth()->user()->agency->id ?? '' }}">
                 <div class="form-group">
                     <label class="form-label">Resource Name</label>
-                    <input type="text" name="name" class="form-control" required placeholder="e.g. Type IV Ambulance">
+                    <input type="text" name="name" class="form-control" required placeholder="e.g. Type IV Ambulance" value="{{ old('name') }}">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Category</label>
                     <select name="category" class="form-control" required>
                         @foreach(\App\Models\Resource::CATEGORIES as $value => $label)
-                            <option value="{{ $value }}">{{ $label }}</option>
+                            <option value="{{ $value }}" @selected(old('category') === $value)>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Total Quantity</label>
-                        <input type="number" name="total_quantity" class="form-control" min="1" required>
+                        <input type="number" name="total_quantity" class="form-control" min="1" required value="{{ old('total_quantity') }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Available Now</label>
-                        <input type="number" name="available_quantity" class="form-control" min="0" required>
+                        <input type="number" name="available_quantity" class="form-control" min="0" required value="{{ old('available_quantity') }}">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Unit</label>
-                        <input type="text" name="unit" class="form-control" placeholder="e.g. units, kg, lit" required>
+                        <input type="text" name="unit" class="form-control" placeholder="e.g. units, kg, lit" required value="{{ old('unit') }}">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Min Threshold</label>
-                        <input type="number" name="minimum_threshold" class="form-control" min="0" value="0">
+                        <input type="number" name="minimum_threshold" class="form-control" min="0" value="{{ old('minimum_threshold', 0) }}">
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;margin-top:10px">

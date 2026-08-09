@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('title', 'Resources')
 @section('content')
-<div class="page-header"><div><h1>Resource Inventory</h1><p>Track, deploy, and manage operational resources.</p></div></div>
+<div class="page-header" role="region" aria-labelledby="resources-heading"><div><h1 id="resources-heading">Resource Inventory</h1><p>Track, deploy, and manage operational resources.</p></div></div>
 <div class="stats-grid" style="margin-bottom:24px">
     <div class="stat-card"><span class="stat-label">Total Resources</span><span class="stat-value">{{ number_format($summary['total']) }}</span></div>
     <div class="stat-card"><span class="stat-label">Available</span><span class="stat-value">{{ number_format($summary['available']) }}</span></div>

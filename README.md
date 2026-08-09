@@ -66,3 +66,8 @@ npm run build
 - Most application routes require authentication.
 - Resource shortages are highlighted when available quantity is at or below threshold.
 - SOS updates are broadcast via the `NewSOSRequest` event.
+
+## Changelog
+
+- 2026-08-09: Repository housekeeping and documentation updates.
+

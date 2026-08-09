@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "lint": "eslint resources/js --fix"
     },
     "devDependencies": {
         "@tailwindcss/vite": "^4.0.0",

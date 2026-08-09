@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * Web routes for the ResQNet application.
+ *
+ * Organized by public, authenticated, volunteer, agency, and admin sections.
+ */
+
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DisasterController;

@@ -7,3 +7,6 @@
  */
 
 import './echo';
+
+// Lightweight debug hint when the frontend bundle initializes
+console.debug('ResQNet JS initialized');

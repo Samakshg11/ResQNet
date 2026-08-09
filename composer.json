@@ -3,6 +3,12 @@
     "name": "laravel/laravel",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
+    "authors": [
+        {
+            "name": "ResQNet Team",
+            "email": "devs@resqnet.local"
+        }
+    ],
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {

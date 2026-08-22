@@ -73,3 +73,5 @@ npm run build
 
 - 2026-08-09: Repository housekeeping and documentation updates.
 
+Developer note: created five small commits on 2026-08-22 for workflow demonstration.
+

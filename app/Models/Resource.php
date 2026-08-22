@@ -40,6 +40,10 @@ class Resource extends Model
     {
         return [
             'metadata' => 'array',
+            'total_quantity' => 'integer',
+            'available_quantity' => 'integer',
+            'deployed_quantity' => 'integer',
+            'minimum_threshold' => 'integer',
         ];
     }
 
@@ -55,12 +59,21 @@ class Resource extends Model
 
     public function categoryLabel(): string
     {
-        return self::CATEGORIES[$this->category] ?? str($this->category)->headline()->toString();
+        return self::CATEGORIES[$this->category] ?? $this->humanize($this->category);
     }
 
     public function statusLabel(): string
     {
-        return self::STATUSES[$this->status] ?? str($this->status)->headline()->toString();
+        return self::STATUSES[$this->status] ?? $this->humanize($this->status);
+    }
+
+    private function humanize(?string $value): string
+    {
+        if (empty($value)) {
+            return 'Unknown';
+        }
+
+        return (string) str($value)->headline()->toString();
     }
 
     public function deployedPercentage(): int

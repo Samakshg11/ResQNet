@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Agency extends Model
 {
+    /**
+     * Agency represents an operational rescue organization.
+     *
+     * Contains relations to `resources`, `volunteers`, and `reports`.
+     */
     use HasFactory, HasUuids, SoftDeletes;
 
     protected $fillable = [

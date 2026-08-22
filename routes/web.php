@@ -104,6 +104,8 @@ Route::middleware(['auth', 'role:gov_admin,super_admin'])->group(function () {
     Route::patch('/sos/{id}/status', [SOSController::class, 'updateStatus'])->name('sos.updateStatus');
     
     Route::get('/resources', [ResourceController::class, 'index'])->name('resources.index');
+    // Alias for resource index to support legacy links
+    Route::get('/resources/index', [ResourceController::class, 'index'])->name('resources.index.alias');
     Route::post('/resources/{id}/deploy', [ResourceController::class, 'deploy'])->name('resources.deploy');
     Route::get('/volunteers', [VolunteerController::class, 'index'])->name('volunteers.index');
     Route::get('/volunteers/{id}', [VolunteerController::class, 'show'])->name('volunteers.show');

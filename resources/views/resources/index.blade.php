@@ -42,7 +42,7 @@
 @endif
 <div class="card">
     <div class="table-wrap">
-        <table>
+        <table aria-describedby="resources-heading" role="table">
             <thead><tr><th>Resource</th><th>Category</th><th>Agency</th><th>Available</th><th>Deployed</th><th>Total</th><th>Utilized</th><th>Status</th><th>Action</th></tr></thead>
             <tbody>
             @forelse($resources as $r)

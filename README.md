@@ -2,6 +2,8 @@
 
 ResQNet is a Laravel-based disaster rescue coordination platform for tracking SOS requests, agencies, resources, alerts, and live operational dashboards.
 
+A concise quick-start: clone the repo, copy `.env`, run migrations, and start the dev servers.
+
 ## Core Modules
 
 - Authentication for volunteers and victims

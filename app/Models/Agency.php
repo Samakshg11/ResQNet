@@ -74,4 +74,13 @@ class Agency extends Model
     {
         return str_replace('_', ' ', ucfirst($this->type));
     }
+
+    public function shortName(int $len = 20): string
+    {
+        if (empty($this->name)) {
+            return '';
+        }
+
+        return (string) str($this->name)->limit($len)->toString();
+    }
 }

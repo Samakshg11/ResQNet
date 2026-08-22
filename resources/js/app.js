@@ -11,4 +11,5 @@ import './echo';
 // Lightweight debug hint when the frontend bundle initializes
 if (typeof window !== 'undefined' && window.console && process.env.NODE_ENV !== 'production') {
 	console.debug('ResQNet JS initialized');
+	console.info('ResQNet client (dev mode)');
 }
